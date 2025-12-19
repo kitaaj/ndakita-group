@@ -1,15 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=League+Spartan:wght@900&display=swap');
-    </style>
-  </defs>
-  <!-- Background: Deep Dark (Brand Text Color) -->
+  <!-- Background: Deep Dark -->
   <rect width="512" height="512" rx="128" fill="#1a1a1a"/>
   
-  <!-- Text: Nude/Blush (Brand BG Color) -->
-  <!-- Using League Spartan weight 900 for that "Popdog" heavy geometric look -->
+  <!-- Text: Nude/Blush -->
+  <!-- Falling back to native system fonts (Arial Black, Impact) to ensure visibility 
+       since external fonts (@import) are often blocked in favicons. -->
   <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" 
-        font-family="'League Spartan', sans-serif" font-weight="900" 
+        font-family="Arial Black, Impact, sans-serif" font-weight="900" 
         font-size="280" fill="#F5D6D0" letter-spacing="-15">NG</text>
 </svg>
