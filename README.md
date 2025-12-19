@@ -8,7 +8,7 @@ Ndakita Group is a global innovation hub bridging the gap between digital growth
 *   **Sub Scout**: Personal subscriptions tracker.
 
 ## 🚀 Live Site
-Visit the official placeholder: **[ndakita-group](https://kitaaj.github.io/ndakita-group/)**
+Visit the official site: **[ndakita-group](https://kitaaj.github.io/ndakita-group/)**
 
 ## 🛠️ Development
 This project is a minimalist, dependency-free static site.
