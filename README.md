@@ -5,6 +5,7 @@ The official corporate presence and digital headquarters for **Ndakita Group Int
 ## 🌍 About
 Ndakita Group is a global innovation hub bridging the gap between digital growth strategies and holistic wellness solutions. It serves as the parent entity for:
 *   **Pure Haven Organics**: Eco-solutions and traditional remedies.
+*   **Sub Scout**: Personal subscriptions tracker.
 
 ## 🚀 Live Site
 Visit the official placeholder: **[ndakita-group](https://kitaaj.github.io/ndakita-group/)**
