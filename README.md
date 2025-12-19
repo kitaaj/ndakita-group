@@ -1,5 +1,7 @@
 # Ndakita Group International
 
+**Build. Grow. Give.**
+
 The official corporate presence and digital headquarters for **Ndakita Group International**.
 
 ## 🌍 About
