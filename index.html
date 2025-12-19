@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ndakita Group</title>
+    <meta name="description" content="Official headquarters of Ndakita Group International.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F5D6D0;
+            --text: #1a1a1a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            transition: background-color 0.4s ease;
+        }
+
+        .logo-container {
+            width: 90%;
+            max-width: 900px;
+            animation: fadeIn 1.2s ease-out;
+            user-select: none;
+        }
+
+        svg {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .brand-text {
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 900;
+            font-size: 80px;
+            letter-spacing: -4px;
+            fill: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        footer {
+            position: absolute;
+            bottom: 3rem;
+            font-family: 'League Spartan', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: rgba(0, 0, 0, 0.3);
+            text-transform: uppercase;
+            font-weight: 700;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-container">
+        <svg viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
+            <text x="50%" y="85" text-anchor="middle" class="brand-text">Ndakita Group</text>
+        </svg>
+    </div>
+
+    <footer>
+        &copy; 2025 NDAKITA GROUP
+    </footer>
+</body>
+
+</html>
