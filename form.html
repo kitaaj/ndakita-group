@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Ndakita Group</title>
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #F5D6D0;
+            --bg-light: #fae8e4;
+            --text: #1a1a1a;
+            --accent: #c9a9a3;
+            --glass: rgba(255, 255, 255, 0.15);
+            --glass-border: rgba(255, 255, 255, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'League Spartan', sans-serif;
+            padding: 2rem;
+            position: relative;
+        }
+
+        /* Grain Texture */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 1000;
+        }
+
+        /* Gradient Background */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 70% 20%, var(--bg-light) 0%, transparent 50%),
+                radial-gradient(ellipse at 30% 80%, var(--accent) 0%, transparent 40%);
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            width: 100%;
+            max-width: 500px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.08);
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-weight: 900;
+            font-size: 2.5rem;
+            letter-spacing: -1px;
+            margin-bottom: 2rem;
+            text-align: center;
+            text-transform: uppercase;
+            animation: fadeIn 0.8s ease-out 0.1s both;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            animation: slideUp 0.6s ease-out both;
+        }
+
+        .form-group:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .form-group:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+
+        .form-group:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        label {
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        input,
+        textarea {
+            background: rgba(255, 255, 255, 0.5);
+            border: 2px solid transparent;
+            padding: 1rem 1.2rem;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 400;
+            font-size: 1rem;
+            color: var(--text);
+            outline: none;
+            transition: all 0.3s ease;
+            border-radius: 12px;
+        }
+
+        input::placeholder,
+        textarea::placeholder {
+            color: rgba(26, 26, 26, 0.4);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        input:focus,
+        textarea:focus {
+            background: rgba(255, 255, 255, 0.8);
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(201, 169, 163, 0.2);
+        }
+
+        .char-count {
+            text-align: right;
+            font-size: 0.7rem;
+            font-weight: 700;
+            opacity: 0.4;
+            margin-top: 0.3rem;
+        }
+
+        /* Submit Button - Shimmer Effect */
+        .submit-wrapper {
+            animation: slideUp 0.6s ease-out 0.5s both;
+            display: flex;
+            justify-content: center;
+            margin-top: 0.5rem;
+        }
+
+        button {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 1rem 2.5rem;
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 900;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 50px;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* Shimmer Sweep */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg,
+                    transparent,
+                    rgba(255, 255, 255, 0.4),
+                    transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        button:hover {
+            transform: scale(1.08) translateY(-3px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover::after {
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                left: -100%;
+            }
+
+            50%,
+            100% {
+                left: 100%;
+            }
+        }
+
+        .back-link {
+            margin-top: 2.5rem;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 0.75rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            opacity: 0.5;
+            transition: opacity 0.3s, transform 0.3s;
+            animation: fadeIn 0.8s ease-out 0.6s both;
+        }
+
+        .back-link:hover {
+            opacity: 1;
+            transform: translateX(-5px);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 2rem;
+                border-radius: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            button {
+                padding: 0.9rem 2rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Contact Us</h1>
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" placeholder="Your name" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" placeholder="your@email.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="4" maxlength="200" placeholder="How can we help?" required
+                    oninput="updateCount(this)"></textarea>
+                <div class="char-count" id="charCount">0/200</div>
+            </div>
+
+            <div class="submit-wrapper">
+                <button type="submit">Send Message</button>
+            </div>
+        </form>
+    </div>
+
+    <a href="index.html" class="back-link">&larr; Back to Home</a>
+
+    <script>
+        function updateCount(textarea) {
+            const count = textarea.value.length;
+            document.getElementById('charCount').textContent = `${count}/200`;
+        }
+    </script>
+</body>
+
+</html>

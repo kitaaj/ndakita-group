@@ -7,7 +7,6 @@
     <title>Ndakita Group</title>
     <meta name="description" content="Official headquarters of Ndakita Group International.">
     <link rel="icon" type="image/svg+xml" href="icon.svg">
-    <!-- Premium Geometric Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&display=swap" rel="stylesheet">
@@ -48,16 +47,16 @@
         }
 
         .brand-text {
-            font-family: 'League Spartan', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-weight: 900;
             font-size: 80px;
-            letter-spacing: -4px;
+            letter-spacing: -2px;
             fill: var(--text);
             -webkit-font-smoothing: antialiased;
         }
 
         .slogan {
-            font-family: 'League Spartan', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-weight: 700;
             font-size: 0.9rem;
             letter-spacing: 0.3em;
@@ -84,12 +83,33 @@
         footer {
             position: absolute;
             bottom: 3rem;
-            font-family: 'League Spartan', sans-serif;
+            font-family: 'Poppins', sans-serif;
             font-size: 0.7rem;
             letter-spacing: 0.4em;
             color: rgba(0, 0, 0, 0.3);
             text-transform: uppercase;
             font-weight: 700;
+        }
+
+        .contact-btn {
+            display: inline-block;
+            margin-top: 2.5rem;
+            text-decoration: none;
+            color: var(--text);
+            border: 2px solid var(--text);
+            padding: 0.8rem 2rem;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            transition: all 0.3s ease;
+            animation: fadeIn 1.5s ease-out;
+            font-size: 0.8rem;
+        }
+
+        .contact-btn:hover {
+            background: var(--text);
+            color: var(--bg);
         }
     </style>
 </head>
@@ -100,6 +120,9 @@
             <text x="50%" y="85" text-anchor="middle" class="brand-text">Ndakita Group</text>
         </svg>
         <div class="slogan">Build. Grow. Give.</div>
+        <!-- <div style="text-align: center;"> -->
+        <!-- <a href="form.html" class="contact-btn">Get In Touch</a> -->
+        <!-- </div> -->
     </div>
 
     <footer>
