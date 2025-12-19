@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ndakita Group</title>
     <meta name="description" content="Official headquarters of Ndakita Group International.">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <!-- Premium Geometric Typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=League+Spartan:wght@800;900&display=swap" rel="stylesheet">
@@ -54,6 +56,19 @@
             -webkit-font-smoothing: antialiased;
         }
 
+        .slogan {
+            font-family: 'League Spartan', sans-serif;
+            font-weight: 700;
+            font-size: 0.9rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--text);
+            opacity: 0.6;
+            margin-top: -10px;
+            /* Pull it slightly closer to the logo */
+            text-align: center;
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -81,9 +96,11 @@
 
 <body>
     <div class="logo-container">
+        <!-- SVG Text for sharp vector rendering -->
         <svg viewBox="0 0 700 120" xmlns="http://www.w3.org/2000/svg">
             <text x="50%" y="85" text-anchor="middle" class="brand-text">Ndakita Group</text>
         </svg>
+        <div class="slogan">Build. Grow. Give.</div>
     </div>
 
     <footer>
