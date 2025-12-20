@@ -24,7 +24,7 @@ export default function TeaserPage({ onEnter }: TeaserPageProps) {
             >
                 {/* Brand Text */}
                 <h1
-                    className="text-6xl md:text-8xl font-black tracking-tight"
+                    className="text-4xl sm:text-6xl md:text-8xl font-black tracking-tight px-4"
                     style={{
                         fontFamily: "'Poppins', sans-serif",
                         color: "#1a1a1a",
@@ -36,7 +36,7 @@ export default function TeaserPage({ onEnter }: TeaserPageProps) {
 
                 {/* Slogan */}
                 <motion.p
-                    className="text-sm md:text-base font-bold uppercase tracking-[0.3em] opacity-60 mt-2"
+                    className="text-xs sm:text-sm md:text-base font-bold uppercase tracking-[0.2em] md:tracking-[0.3em] opacity-60 mt-2 px-4"
                     style={{
                         fontFamily: "'Poppins', sans-serif",
                         color: "#1a1a1a",
@@ -51,7 +51,7 @@ export default function TeaserPage({ onEnter }: TeaserPageProps) {
                 {/* What's Cooking Button */}
                 <motion.button
                     onClick={onEnter}
-                    className="mt-10 px-8 py-4 border-2 border-[#1a1a1a] font-bold uppercase tracking-[0.2em] text-sm transition-all duration-300 hover:bg-[#1a1a1a] hover:text-[#F5D6D0] active:scale-95"
+                    className="mt-8 md:mt-10 px-6 py-3 md:px-8 md:py-4 border-2 border-[#1a1a1a] font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-xs md:text-sm transition-all duration-300 hover:bg-[#1a1a1a] hover:text-[#F5D6D0] active:scale-95"
                     style={{
                         fontFamily: "'Poppins', sans-serif",
                         color: "#1a1a1a",

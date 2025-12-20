@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform, useTime } from "framer-motion";
 import Image from "next/image";
 
 // Images positioned to frame the content - more density
@@ -34,9 +34,14 @@ interface ImageData {
     height: number;
 }
 
-function FloatingImage({ img, mouseX, mouseY }: { img: ImageData; mouseX: ReturnType<typeof useSpring>; mouseY: ReturnType<typeof useSpring> }) {
+function FloatingImage({ img, mouseX, mouseY, isMobile }: { img: ImageData; mouseX: ReturnType<typeof useSpring>; mouseY: ReturnType<typeof useSpring>; isMobile: boolean }) {
     const x = useTransform(mouseX, (val: number) => val * img.depth);
     const y = useTransform(mouseY, (val: number) => val * img.depth);
+
+    // Responsive scaling
+    const scaleFactor = isMobile ? 0.5 : 1;
+    const itemWidth = img.width * scaleFactor;
+    const itemHeight = img.height * scaleFactor;
 
     return (
         <motion.div
@@ -47,8 +52,8 @@ function FloatingImage({ img, mouseX, mouseY }: { img: ImageData; mouseX: Return
                 x,
                 y,
                 filter: `grayscale(1) blur(${img.blur}px)`,
-                width: img.width,
-                height: img.height,
+                width: itemWidth,
+                height: itemHeight,
                 zIndex: Math.abs(img.depth), // Higher depth = closer to viewer = higher z-index
             }}
             initial={{ opacity: 0, scale: 0.9 }}
@@ -61,37 +66,69 @@ function FloatingImage({ img, mouseX, mouseY }: { img: ImageData; mouseX: Return
                 alt={img.alt}
                 fill
                 className="object-cover"
-                sizes="(max-width: 768px) 50vw, 25vw"
+                sizes="(max-width: 768px) 33vw, 25vw"
             />
         </motion.div>
     );
 }
 
 export default function FloatingGrid() {
+    const [isMobile, setIsMobile] = useState(false);
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
-    // Smooth spring physics
+    // Smooth spring physics for interaction
     const springConfig = { damping: 30, stiffness: 80, mass: 0.8 };
     const smoothX = useSpring(mouseX, springConfig);
     const smoothY = useSpring(mouseY, springConfig);
 
-    // Subtle 3D Tilt
-    const rotateX = useTransform(smoothY, [-1, 1], [2, -2]);
-    const rotateY = useTransform(smoothX, [-1, 1], [-2, 2]);
+    // Auto sway for mobile
+    const time = useTime();
+    const autoX = useTransform(time, [0, 8000], [-0.3, 0.3], { clamp: false });
+    const autoY = useTransform(time, [0, 10000], [0.3, -0.3], { clamp: false });
+
+    // Loop auto animation for sway
+    const swayX = useTransform(autoX, (t) => Math.sin(t / 1000) * 0.4);
+    const swayY = useTransform(autoY, (t) => Math.cos(t / 1000) * 0.4);
 
     useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+
+        checkMobile();
+        window.addEventListener("resize", checkMobile);
+
         const handleMouseMove = (e: MouseEvent) => {
-            const { innerWidth, innerHeight } = window;
-            const x = (e.clientX / innerWidth - 0.5) * 2;
-            const y = (e.clientY / innerHeight - 0.5) * 2;
-            mouseX.set(x);
-            mouseY.set(y);
+            // Only use mouse interaction on desktop
+            if (window.innerWidth >= 1024) {
+                const { innerWidth, innerHeight } = window;
+                const x = (e.clientX / innerWidth - 0.5) * 2;
+                const y = (e.clientY / innerHeight - 0.5) * 2;
+                mouseX.set(x);
+                mouseY.set(y);
+            }
         };
 
         window.addEventListener("mousemove", handleMouseMove);
-        return () => window.removeEventListener("mousemove", handleMouseMove);
+        return () => {
+            window.removeEventListener("resize", checkMobile);
+            window.removeEventListener("mousemove", handleMouseMove);
+        };
     }, [mouseX, mouseY]);
+
+    // Update springs based on input source (mouse or auto-sway)
+    useEffect(() => {
+        if (isMobile) {
+            const unsubX = swayX.on("change", (latest) => smoothX.set(latest));
+            const unsubY = swayY.on("change", (latest) => smoothY.set(latest));
+            return () => { unsubX(); unsubY(); };
+        }
+    }, [isMobile, swayX, swayY, smoothX, smoothY]);
+
+    // Subtle 3D Tilt
+    const rotateX = useTransform(smoothY, [-1, 1], [2, -2]);
+    const rotateY = useTransform(smoothX, [-1, 1], [-2, 2]);
 
     return (
         <motion.div
@@ -104,13 +141,13 @@ export default function FloatingGrid() {
             <motion.div
                 className="absolute inset-0"
                 style={{
-                    rotateX,
-                    rotateY,
+                    rotateX: isMobile ? 0 : rotateX, // Disable complex 3D tilt on mobile for performance
+                    rotateY: isMobile ? 0 : rotateY,
                     transformStyle: "preserve-3d",
                 }}
             >
                 {images.map((img, i) => (
-                    <FloatingImage key={i} img={img} mouseX={smoothX} mouseY={smoothY} />
+                    <FloatingImage key={i} img={img} mouseX={smoothX} mouseY={smoothY} isMobile={isMobile} />
                 ))}
             </motion.div>
         </motion.div>

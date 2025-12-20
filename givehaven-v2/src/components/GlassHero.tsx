@@ -14,13 +14,13 @@ export default function GlassHero({ onJoinClick }: GlassHeroProps) {
                 initial={{ scale: 0.9, opacity: 0, y: 20 }}
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, ease: "easeOut" }}
-                className="relative p-12 md:p-20 rounded-3xl max-w-4xl w-full border border-white/20 shadow-2xl backdrop-blur-xl overflow-hidden bg-brand-pink-deep"
+                className="relative p-6 md:p-20 rounded-3xl max-w-4xl w-full border border-white/20 shadow-2xl backdrop-blur-xl overflow-hidden bg-brand-pink-deep"
             >
                 {/* Shimmer Effect - darker to match */}
                 <div className="absolute inset-0 -translate-x-[100%] animate-[shimmer_3s_infinite] bg-gradient-to-r from-transparent via-white/10 to-transparent pointer-events-none" />
 
                 <motion.h1
-                    className="text-5xl md:text-8xl font-serif font-bold text-gradient mb-6 tracking-tight"
+                    className="text-4xl sm:text-6xl md:text-8xl font-serif font-bold text-gradient mb-4 md:mb-6 tracking-tight"
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.2, duration: 0.8 }}
