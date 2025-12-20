@@ -23,7 +23,7 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
         try {
             const formId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
             if (!formId) {
-                console.error("Formspree ID is missing");
+
                 alert("Configuration Error: Form ID missing.");
                 return;
             }
@@ -45,13 +45,13 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                 }, 3000);
             } else {
                 const data = await response.json();
-                console.error("Submission failed:", data);
+
                 if (data.errors) {
                     alert("Error: " + data.errors.map((e: any) => e.message).join(", "));
                 }
             }
         } catch (error) {
-            console.error("Error submitting form:", error);
+
             alert("Network error. Please try again.");
         }
     };
