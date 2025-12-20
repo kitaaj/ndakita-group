@@ -13,6 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://www.ndakita.com"),
   title: "Ndakita Group | Give Haven - Connecting Hearts to Homes",
   description: "A secure, verified platform for connecting to children's homes. Transparency, dignity, and impact in every donation.",
   keywords: ["charity", "donations", "children's homes", "Give Haven", "Ndakita Group", "orphanage support", "transparent giving"],
