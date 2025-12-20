@@ -87,9 +87,9 @@ export default function FloatingGrid() {
     const autoX = useTransform(time, [0, 8000], [-0.3, 0.3], { clamp: false });
     const autoY = useTransform(time, [0, 10000], [0.3, -0.3], { clamp: false });
 
-    // Loop auto animation for sway
-    const swayX = useTransform(autoX, (t) => Math.sin(t / 1000) * 0.4);
-    const swayY = useTransform(autoY, (t) => Math.cos(t / 1000) * 0.4);
+    // Loop auto animation for sway - increased amplitude and speed for visibility
+    const swayX = useTransform(autoX, (t) => Math.sin(t / 800) * 1.0);
+    const swayY = useTransform(autoY, (t) => Math.cos(t / 800) * 1.0);
 
     useEffect(() => {
         const checkMobile = () => {

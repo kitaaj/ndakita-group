@@ -17,16 +17,31 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Here you would typically send to an API
-        console.log("Waitlist submission:", formData);
-        setIsSubmitted(true);
-        setTimeout(() => {
-            setIsSubmitted(false);
-            onClose();
-            setFormData({ name: "", email: "", message: "" });
-        }, 2000);
+
+        try {
+            const response = await fetch("https://formspree.io/f/xdanaegz", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (response.ok) {
+                setIsSubmitted(true);
+                setTimeout(() => {
+                    setIsSubmitted(false);
+                    onClose();
+                    setFormData({ name: "", email: "", message: "" });
+                }, 3000);
+            } else {
+                console.error("Submission failed");
+            }
+        } catch (error) {
+            console.error("Error submitting form:", error);
+        }
     };
 
     return (
