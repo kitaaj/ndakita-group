@@ -13,9 +13,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Ndakita Group | GiveHaven - Connecting Hearts to Homes",
-  description: "A secure, verified platform for direct donations to children's homes. Transparency, dignity, and impact in every donation.",
-  keywords: ["charity", "donations", "children's homes", "GiveHaven", "Ndakita Group", "orphanage support", "transparent giving"],
+  title: "Ndakita Group | Give Haven - Connecting Hearts to Homes",
+  description: "A secure, verified platform for connecting to children's homes. Transparency, dignity, and impact in every donation.",
+  keywords: ["charity", "donations", "children's homes", "Give Haven", "Ndakita Group", "orphanage support", "transparent giving"],
   authors: [{ name: "Ndakita Group" }],
   icons: {
     icon: [
@@ -25,23 +25,23 @@ export const metadata: Metadata = {
     apple: "/favicon.png",
   },
   openGraph: {
-    title: "Ndakita Group | GiveHaven",
+    title: "Ndakita Group | Give Haven",
     description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
     type: "website",
     locale: "en_US",
-    siteName: "GiveHaven by Ndakita Group",
+    siteName: "Give Haven by Ndakita Group",
     images: [
       {
         url: "/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "Ndakita Group - GiveHaven",
+        alt: "Ndakita Group - Give Haven",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Ndakita Group | GiveHaven",
+    title: "Ndakita Group | Give Haven",
     description: "Make your kindness count where it matters most.",
     images: ["/og-image.jpg"],
   },
