@@ -24,7 +24,8 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
             const response = await fetch("https://formspree.io/f/xdanaegz", {
                 method: "POST",
                 headers: {
-                    "Content-Type": "application/json"
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
                 },
                 body: JSON.stringify(formData)
             });
@@ -37,10 +38,15 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                     setFormData({ name: "", email: "", message: "" });
                 }, 3000);
             } else {
-                console.error("Submission failed");
+                const data = await response.json();
+                console.error("Submission failed:", data);
+                if (data.errors) {
+                    alert("Error: " + data.errors.map((e: any) => e.message).join(", "));
+                }
             }
         } catch (error) {
             console.error("Error submitting form:", error);
+            alert("Network error. Please try again.");
         }
     };
 
