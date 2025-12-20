@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-dark: #ffffff;
+  /* White text */
+  --color-brand-gold: #d4af37;
+  --color-brand-slate: #fde4e9;
+  /* Light pink for accents */
+  --color-brand-cream: #ffffff;
+
+  --color-brand-pink-light: #f4c2c2;
+  /* Solid Baby Pink / Tea Rose */
+  --color-brand-pink-soft: #f8d7da;
+  --color-brand-pink-main: #ffb7c5;
+  /* Cherry Blossom */
+  --color-brand-pink-deep: #e6a4b4;
+
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+
+  --animate-float: float 6s ease-in-out infinite;
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+
+    50% {
+      transform: translateY(-20px);
+    }
+  }
+
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-150%);
+    }
+
+    50% {
+      transform: translateX(150%);
+    }
+
+    100% {
+      transform: translateX(150%);
+    }
+  }
+}
+
+/* Glassmorphism Utilities */
+.glass-panel {
+  @apply backdrop-blur-2xl bg-white/5 border border-white/10 shadow-xl;
+}
+
+.glass-button {
+  @apply backdrop-blur-md bg-white/10 border border-white/20 hover:bg-white/20 transition-all duration-300;
+}
+
+.text-gradient {
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/70;
+}
+
+body {
+  @apply bg-brand-pink-light text-brand-dark;
+  background: #f4c2c2;
+  /* Solid Pink from reference approximation */
+  min-height: 100vh;
+}

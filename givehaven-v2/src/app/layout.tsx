@@ -1,0 +1,55 @@
+import type { Metadata } from "next";
+import { Playfair_Display, Inter } from "next/font/google";
+import "./globals.css";
+
+const playfair = Playfair_Display({
+  variable: "--font-playfair",
+  subsets: ["latin"],
+});
+
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin"],
+});
+
+export const metadata: Metadata = {
+  title: "Ndakita Group | GiveHaven - Connecting Hearts to Homes",
+  description: "A secure, verified platform for direct donations to children's homes. Transparency, dignity, and impact in every donation.",
+  keywords: ["charity", "donations", "children's homes", "GiveHaven", "Ndakita Group", "orphanage support", "transparent giving"],
+  authors: [{ name: "Ndakita Group" }],
+  icons: {
+    icon: [
+      { url: "/favicon.png", type: "image/png" },
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/favicon.png",
+  },
+  openGraph: {
+    title: "Ndakita Group | GiveHaven",
+    description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
+    type: "website",
+    locale: "en_US",
+    siteName: "GiveHaven by Ndakita Group",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ndakita Group | GiveHaven",
+    description: "Make your kindness count where it matters most.",
+  },
+};
+
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
+  return (
+    <html lang="en">
+      <body
+        className={`${playfair.variable} ${inter.variable} antialiased font-sans bg-brand-dark text-brand-cream selection:bg-brand-gold/30`}
+      >
+        {children}
+      </body>
+    </html>
+  );
+}
