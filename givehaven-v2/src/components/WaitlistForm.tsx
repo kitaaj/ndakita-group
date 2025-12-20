@@ -21,7 +21,13 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
         e.preventDefault();
 
         try {
-            const response = await fetch("https://formspree.io/f/xdanaegz", {
+            const formId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
+            if (!formId) {
+                console.error("Formspree ID is missing");
+                alert("Configuration Error: Form ID missing.");
+                return;
+            }
+            const response = await fetch(`https://formspree.io/f/${formId}`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
