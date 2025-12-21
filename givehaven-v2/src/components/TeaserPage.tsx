@@ -100,7 +100,7 @@ export default function TeaserPage({ onEnter }: TeaserPageProps) {
                 {/* What's Cooking Button */}
                 <motion.button
                     onClick={onEnter}
-                    className="mt-8 md:mt-10 px-6 py-3 md:px-8 md:py-4 border-2 font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-xs md:text-sm transition-all duration-300 rounded-lg"
+                    className="mt-8 md:mt-10 px-6 py-3 md:px-8 md:py-4 border-2 font-bold uppercase tracking-[0.15em] md:tracking-[0.2em] text-xs md:text-sm rounded-lg"
                     style={{
                         fontFamily: "'Poppins', sans-serif",
                         color: "#0D9488",
@@ -114,6 +114,7 @@ export default function TeaserPage({ onEnter }: TeaserPageProps) {
                         scale: 1.02,
                         backgroundColor: "#0D9488",
                         color: "#ffffff",
+                        transition: { duration: 0.2, ease: "easeInOut" }
                     }}
                     whileTap={{ scale: 0.98 }}
                 >
