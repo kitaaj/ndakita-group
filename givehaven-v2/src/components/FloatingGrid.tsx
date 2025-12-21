@@ -86,9 +86,9 @@ export default function FloatingGrid() {
     const time = useTime();
 
     // Loop auto animation for sway - directly from time for continuous movement
-    // Range -0.2 to 0.2, cycle every ~5 seconds
-    const swayX = useTransform(time, (t) => Math.sin(t / 1000) * 0.2);
-    const swayY = useTransform(time, (t) => Math.cos(t / 1000) * 0.2); // Range -0.2 to 0.2
+    // Range -0.2 to 0.2, cycle every ~15 seconds (slow, gentle sway)
+    const swayX = useTransform(time, (t) => Math.sin(t / 2500) * 0.2);
+    const swayY = useTransform(time, (t) => Math.cos(t / 2500) * 0.2); // Range -0.2 to 0.2
 
     useEffect(() => {
         const checkMobile = () => {
