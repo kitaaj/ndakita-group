@@ -1,16 +1,86 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import FloatingGrid from "@/components/FloatingGrid";
 import GlassHero from "@/components/GlassHero";
 import TeaserPage from "@/components/TeaserPage";
 import WaitlistForm from "@/components/WaitlistForm";
+import { supabase } from "@/lib/supabase";
 
 export default function Home() {
+  const router = useRouter();
   const [showGiveHaven, setShowGiveHaven] = useState(false);
   const [showWaitlistForm, setShowWaitlistForm] = useState(false);
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
+  // Check for OAuth tokens in URL hash
+  useEffect(() => {
+    async function handleAuthRedirect() {
+      // Check if there's an access_token in the hash (OAuth callback fallback)
+      if (typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+        if (!supabase) {
+          setIsCheckingAuth(false);
+          return;
+        }
+
+        // Let Supabase handle the hash and set up the session
+        const { data: { session }, error } = await supabase.auth.getSession();
+
+        if (session && !error) {
+          // Clear the URL hash for security (don't leave tokens visible)
+          window.history.replaceState(null, '', window.location.pathname);
+
+          // Check if profile exists, create if not
+          const { data: existingProfile } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('user_id', session.user.id)
+            .single();
+
+          if (!existingProfile) {
+            // Create profile for new user
+            await supabase.from('profiles').insert({
+              user_id: session.user.id,
+              display_name: session.user.user_metadata?.full_name || session.user.email,
+              avatar_url: session.user.user_metadata?.avatar_url,
+              role: 'donor',
+              is_super_admin: false,
+            });
+          }
+
+          // Successfully authenticated, redirect to admin
+          router.push('/admin');
+          return;
+        } else {
+          // Clear hash even on error
+          window.history.replaceState(null, '', window.location.pathname);
+        }
+      }
+      setIsCheckingAuth(false);
+    }
+
+    handleAuthRedirect();
+  }, [router]);
+
+  // Show loading while checking auth
+  if (isCheckingAuth && typeof window !== 'undefined' && window.location.hash.includes('access_token')) {
+    return (
+      <div
+        className="min-h-screen flex items-center justify-center"
+        style={{ backgroundColor: "#F8FAFC" }}
+      >
+        <div className="text-center">
+          <div
+            className="w-12 h-12 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin"
+            style={{ borderColor: "#0D9488", borderTopColor: "transparent" }}
+          />
+          <p style={{ color: "#64748B" }}>Signing you in...</p>
+        </div>
+      </div>
+    );
+  }
   return (
     <>
       <AnimatePresence mode="wait">
