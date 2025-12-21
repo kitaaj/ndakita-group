@@ -24,6 +24,8 @@ export default function DonorsPage() {
 
     useEffect(() => {
         async function loadData() {
+            if (!supabase) return;
+
             try {
                 // Get donor profiles
                 const { data: profiles, count } = await supabase
@@ -48,7 +50,8 @@ export default function DonorsPage() {
                 // Calculate donor stats
                 const donorMap = new Map<string, { pledges: number; completed: number; lastActive: string | null }>();
 
-                chatRooms?.forEach((room: { donor_id: string; created_at: string; needs: { status: string } | null }) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                chatRooms?.forEach((room: any) => {
                     const existing = donorMap.get(room.donor_id) || { pledges: 0, completed: 0, lastActive: null };
                     existing.pledges += 1;
                     if (room.needs?.status === "completed") {
@@ -61,7 +64,8 @@ export default function DonorsPage() {
                 });
 
                 // Merge with profile data
-                const donorStats: DonorStats[] = (profiles || []).map((profile) => {
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                const donorStats: DonorStats[] = (profiles || []).map((profile: any) => {
                     const stats = donorMap.get(profile.id) || { pledges: 0, completed: 0, lastActive: null };
                     return {
                         id: profile.id,

@@ -110,9 +110,10 @@ export default function LogsPage() {
                 return;
             }
 
-            const csvData = data.map((need: { id: string; title: string; category: string; created_at: string; completed_at: string; homes: { name: string } | null }) => ({
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            const csvData = data.map((need: any) => ({
                 "Need ID": need.id,
-                "Home Name": need.homes?.name || "Unknown",
+                "Home Name": need.homes?.[0]?.name || "Unknown",
                 "Item Category": need.category,
                 "Date Posted": new Date(need.created_at).toLocaleDateString(),
                 "Date Fulfilled": new Date(need.completed_at).toLocaleDateString(),
