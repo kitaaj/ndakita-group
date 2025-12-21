@@ -57,7 +57,7 @@ function FloatingImage({ img, mouseX, mouseY, isMobile }: { img: ImageData; mous
                 zIndex: Math.abs(img.depth), // Higher depth = closer to viewer = higher z-index
             }}
             initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 0.9, scale: 1 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 1, ease: "easeOut" }}
             whileHover={{ scale: 1.03, filter: "grayscale(1)", opacity: 1, zIndex: 200 }}
         >
