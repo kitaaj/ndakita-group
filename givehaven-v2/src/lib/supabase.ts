@@ -32,7 +32,7 @@ export async function signInWithGoogle() {
     const { data, error } = await client.auth.signInWithOAuth({
         provider: "google",
         options: {
-            redirectTo: `${window.location.origin}/admin`,
+            redirectTo: `${window.location.origin}/auth/callback`,
         },
     });
     return { data, error };
