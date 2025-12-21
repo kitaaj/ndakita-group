@@ -56,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${playfair.variable} ${inter.variable} antialiased font-sans bg-brand-dark text-brand-cream selection:bg-brand-gold/30`}
+        className={`${playfair.variable} ${inter.variable} antialiased font-sans bg-canvas-base text-text-primary selection:bg-haven-teal/20 selection:text-haven-teal`}
       >
         {children}
       </body>

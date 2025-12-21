@@ -19,7 +19,8 @@ export default function Home() {
         ) : (
           <motion.main
             key="givehaven"
-            className="min-h-screen relative overflow-hidden bg-brand-dark"
+            className="min-h-screen relative overflow-hidden"
+            style={{ backgroundColor: "#F5D6D0" }}
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
@@ -27,7 +28,7 @@ export default function Home() {
             {/* Back Home Button */}
             <motion.button
               onClick={() => setShowGiveHaven(false)}
-              className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-brand-pink-deep/70 border border-brand-pink-deep/80 backdrop-blur-md text-white hover:bg-brand-pink-deep transition-all duration-300 text-sm font-semibold"
+              className="fixed top-6 left-6 z-50 flex items-center gap-2 px-4 py-2 rounded-full bg-brand-pink-deep/70 border border-brand-pink-deep backdrop-blur-md text-white hover:bg-brand-pink-deep transition-all duration-300 text-sm font-semibold"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.5, duration: 0.5 }}
