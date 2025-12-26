@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
 export default function AuthCallbackPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
 
     useEffect(() => {
         async function handleCallback() {
@@ -23,12 +24,46 @@ export default function AuthCallbackPage() {
                 return;
             }
 
-            // Successfully authenticated, redirect to admin
-            router.push("/admin");
+            // Check for explicit redirect destination from query param
+            const redirectTo = searchParams.get("redirect");
+            if (redirectTo) {
+                router.push(redirectTo);
+                return;
+            }
+
+            // Check if user has a profile and determine role
+            const { data: profile } = await supabase
+                .from("profiles")
+                .select("role")
+                .eq("user_id", session.user.id)
+                .single();
+
+            if (profile?.role === "admin") {
+                router.push("/admin");
+            } else if (profile?.role === "home") {
+                // Check if they have an existing home
+                const { data: home } = await supabase
+                    .from("homes")
+                    .select("id")
+                    .eq("profile_id", profile?.id)
+                    .single();
+
+                if (home) {
+                    router.push("/home");
+                } else {
+                    router.push("/register-home");
+                }
+            } else if (profile?.role === "donor") {
+                // Donor - send to explore page
+                router.push("/explore");
+            } else {
+                // New user without profile - send to explore (they can donate without registering a home)
+                router.push("/explore");
+            }
         }
 
         handleCallback();
-    }, [router]);
+    }, [router, searchParams]);
 
     return (
         <div

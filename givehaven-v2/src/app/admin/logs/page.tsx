@@ -24,12 +24,17 @@ export default function LogsPage() {
         if (!supabase) return;
 
         try {
-            // Get activity logs
-            const { data: logsData } = await supabase
+            // Get activity logs - note: user_id references auth.users, not profiles directly
+            // So we fetch logs without joining and show what we have
+            const { data: logsData, error: logsError } = await supabase
                 .from("activity_logs")
                 .select("*")
                 .order("created_at", { ascending: false })
                 .limit(100);
+
+            if (logsError) {
+                console.error("Failed to fetch logs:", logsError);
+            }
 
             setLogs((logsData as ActivityLog[]) || []);
 
@@ -388,7 +393,7 @@ export default function LogsPage() {
                                                             {log.user_id && (
                                                                 <div>
                                                                     <p className="font-medium mb-1" style={{ color: "#64748B" }}>Executed By</p>
-                                                                    <p style={{ color: "#1E293B" }}>Admin (ID: {log.user_id.slice(0, 8)}...)</p>
+                                                                    <p style={{ color: "#1E293B" }}>Admin</p>
                                                                 </div>
                                                             )}
                                                             {log.metadata && Object.keys(log.metadata).length > 0 && (

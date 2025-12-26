@@ -1,0 +1,178 @@
+forward-logs-shared.ts:95 [HMR] connected
+installHook.js:1  A tree hydrated but some attributes of the server rendered HTML didn't match the client properties. This won't be patched up. This can happen if a SSR-ed Client Component used:
+
+- A server/client branch `if (typeof window !== 'undefined')`.
+- Variable input such as `Date.now()` or `Math.random()` which changes each time it's called.
+- Date formatting in a user's locale which doesn't match the server.
+- External changing data without sending a snapshot of it along with the HTML.
+- Invalid HTML tag nesting.
+
+It can also happen if the client has a browser extension installed which messes with the HTML before React loaded.
+
+https://react.dev/link/hydration-mismatch
+
+  ...
+    <HotReload globalError={[...]} webSocket={WebSocket} staticIndicatorState={{pathname:null, ...}}>
+      <AppDevOverlayErrorBoundary globalError={[...]}>
+        <ReplaySsrOnlyErrors>
+        <DevRootHTTPAccessFallbackBoundary>
+          <HTTPAccessFallbackBoundary notFound={<NotAllowedRootHTTPFallbackError>}>
+            <HTTPAccessFallbackErrorBoundary pathname="/register-..." notFound={<NotAllowedRootHTTPFallbackError>} ...>
+              <RedirectBoundary>
+                <RedirectErrorBoundary router={{...}}>
+                  <Head>
+                  <__next_root_layout_boundary__>
+                    <SegmentViewNode type="layout" pagePath="/Desktop/d...">
+                      <SegmentTrieNode>
+                      <link>
+                      <script>
+                      <RootLayout>
+                        <html lang="en">
+                          <body
+                            className="playfair_display_fa003182-module__E_H7JW__variable inter_fe8b9d92-module__LINzv..."
+-                           cz-shortcut-listen="true"
+-                           data-new-gr-c-s-check-loaded="14.1131.0"
+-                           data-gr-ext-installed=""
+                          >
+                  ...
+
+overrideMethod @ installHook.js:1
+error @ intercept-console-error.ts:42
+(anonymous) @ react-dom-client.development.js:5731
+runWithFiberInDEV @ react-dom-client.development.js:986
+emitPendingHydrationWarnings @ react-dom-client.development.js:5730
+completeWork @ react-dom-client.development.js:12862
+runWithFiberInDEV @ react-dom-client.development.js:989
+completeUnitOfWork @ react-dom-client.development.js:19133
+performUnitOfWork @ react-dom-client.development.js:19014
+workLoopConcurrentByScheduler @ react-dom-client.development.js:18991
+renderRootConcurrent @ react-dom-client.development.js:18973
+performWorkOnRoot @ react-dom-client.development.js:17834
+performWorkOnRootViaSchedulerTask @ react-dom-client.development.js:20384
+performWorkUntilDeadline @ scheduler.development.js:45
+<body>
+RootLayout @ layout.tsx:58
+initializeElement @ react-server-dom-turbopack-client.browser.development.js:1933
+(anonymous) @ react-server-dom-turbopack-client.browser.development.js:4605
+initializeModelChunk @ react-server-dom-turbopack-client.browser.development.js:1820
+getOutlinedModel @ react-server-dom-turbopack-client.browser.development.js:2322
+parseModelString @ react-server-dom-turbopack-client.browser.development.js:2712
+(anonymous) @ react-server-dom-turbopack-client.browser.development.js:4536
+initializeModelChunk @ react-server-dom-turbopack-client.browser.development.js:1820
+resolveModelChunk @ react-server-dom-turbopack-client.browser.development.js:1664
+processFullStringRow @ react-server-dom-turbopack-client.browser.development.js:4425
+processFullBinaryRow @ react-server-dom-turbopack-client.browser.development.js:4283
+processBinaryChunk @ react-server-dom-turbopack-client.browser.development.js:4506
+progress @ react-server-dom-turbopack-client.browser.development.js:4780
+<RootLayout>
+initializeFakeTask @ react-server-dom-turbopack-client.browser.development.js:3373
+initializeDebugInfo @ react-server-dom-turbopack-client.browser.development.js:3398
+initializeDebugChunk @ react-server-dom-turbopack-client.browser.development.js:1764
+processFullStringRow @ react-server-dom-turbopack-client.browser.development.js:4372
+processFullBinaryRow @ react-server-dom-turbopack-client.browser.development.js:4283
+processBinaryChunk @ react-server-dom-turbopack-client.browser.development.js:4506
+progress @ react-server-dom-turbopack-client.browser.development.js:4780
+"use server"
+ResponseInstance @ react-server-dom-turbopack-client.browser.development.js:2767
+createResponseFromOptions @ react-server-dom-turbopack-client.browser.development.js:4641
+exports.createFromReadableStream @ react-server-dom-turbopack-client.browser.development.js:5045
+module evaluation @ app-index.tsx:211
+(anonymous) @ dev-base.ts:244
+runModuleExecutionHooks @ dev-base.ts:278
+instantiateModule @ dev-base.ts:238
+getOrInstantiateModuleFromParent @ dev-base.ts:162
+commonJsRequire @ runtime-utils.ts:389
+(anonymous) @ app-next-turbopack.ts:11
+(anonymous) @ app-bootstrap.ts:79
+loadScriptsInSequence @ app-bootstrap.ts:23
+appBootstrap @ app-bootstrap.ts:61
+module evaluation @ app-next-turbopack.ts:10
+(anonymous) @ dev-base.ts:244
+runModuleExecutionHooks @ dev-base.ts:278
+instantiateModule @ dev-base.ts:238
+getOrInstantiateRuntimeModule @ dev-base.ts:128
+registerChunk @ runtime-backend-dom.ts:57
+await in registerChunk
+registerChunk @ dev-base.ts:1149
+(anonymous) @ dev-backend-dom.ts:126
+(anonymous) @ dev-backend-dom.ts:126
+Grammarly.js:2  grm ERROR [iterable] ░░ Not supported: in app messages from Iterable
+write @ Grammarly.js:2
+handleEvent @ Grammarly.js:2
+_logMessage @ Grammarly.js:2
+error @ Grammarly.js:2
+error @ Grammarly.js:2
+onTrigger @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e.next @ Grammarly.js:2
+t._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+t._execute @ Grammarly.js:2
+t.execute @ Grammarly.js:2
+t.flush @ Grammarly.js:2
+setInterval
+setInterval @ Grammarly.js:2
+t.requestAsyncId @ Grammarly.js:2
+t.schedule @ Grammarly.js:2
+e.schedule @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e._trySubscribe @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+o @ Grammarly.js:2
+e.subscribe @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e.next @ Grammarly.js:2
+t._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+o @ Grammarly.js:2
+t.next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+set @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e.next @ Grammarly.js:2
+t._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+a._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+o @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e.next @ Grammarly.js:2
+t._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+a._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+_processObservableMessage @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+e.next @ Grammarly.js:2
+t._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+a._next @ Grammarly.js:2
+t.next @ Grammarly.js:2
+t @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+(anonymous) @ Grammarly.js:2
+fire @ Grammarly.js:2
+_onBgPortMessage @ Grammarly.js:2
+installHook.js:1  Failed to register home: StorageApiError: Bucket not found
+    at fetch.ts:37:16
+overrideMethod @ installHook.js:1
+error @ intercept-console-error.ts:42
+handleSubmit @ page.tsx:171
+await in handleSubmit
+executeDispatch @ react-dom-client.development.js:20543
+runWithFiberInDEV @ react-dom-client.development.js:986
+processDispatchQueue @ react-dom-client.development.js:20593
+(anonymous) @ react-dom-client.development.js:21164
+batchedUpdates$1 @ react-dom-client.development.js:3377
+dispatchEventForPluginEventSystem @ react-dom-client.development.js:20747
+dispatchEvent @ react-dom-client.development.js:25693
+dispatchDiscreteEvent @ react-dom-client.development.js:25661
+forward-logs-shared.ts:95 [Fast Refresh] rebuilding
+forward-logs-shared.ts:95 [Fast Refresh] done in 887ms

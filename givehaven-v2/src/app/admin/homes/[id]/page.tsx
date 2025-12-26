@@ -6,11 +6,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
     Building2, MapPin, Calendar, Mail, Phone, FileText,
     CheckCircle, XCircle, ArrowLeft, ExternalLink, Loader2,
-    ChevronDown, Check
+    ChevronDown, Check, BadgeCheck
 } from "lucide-react";
 import Badge, { VerificationStatus, verificationStatusLabels } from "@/components/admin/Badge";
 import HomeLogo from "@/components/admin/HomeLogo";
-import { supabase, type Home } from "@/lib/supabase";
+import { supabase, getSignedUrl, type Home } from "@/lib/supabase";
 
 // Verification workflow statuses in order
 const VERIFICATION_STATUSES: VerificationStatus[] = [
@@ -39,6 +39,7 @@ export default function HomeDetailsPage() {
     const [showRejectModal, setShowRejectModal] = useState(false);
     const [rejectReason, setRejectReason] = useState("");
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [loadingDocUrl, setLoadingDocUrl] = useState(false);
 
     // Get current user on mount
     useEffect(() => {
@@ -167,6 +168,27 @@ export default function HomeDetailsPage() {
         }
     }
 
+    async function handleViewDoc() {
+        if (!home?.registration_doc_url) return;
+
+        setLoadingDocUrl(true);
+        try {
+            const signedUrl = await getSignedUrl(home.registration_doc_url);
+            if (signedUrl) {
+                window.open(signedUrl, '_blank');
+            } else {
+                // Fallback to original URL
+                window.open(home.registration_doc_url, '_blank');
+            }
+        } catch (error) {
+            console.error('Failed to get signed URL:', error);
+            // Fallback to original URL
+            window.open(home.registration_doc_url, '_blank');
+        } finally {
+            setLoadingDocUrl(false);
+        }
+    }
+
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-US", {
             year: "numeric",
@@ -215,123 +237,202 @@ export default function HomeDetailsPage() {
                 Back to Homes
             </button>
 
-            {/* Header Card */}
+            {/* Twitter-Style Profile Header */}
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl p-6 relative"
+                className="rounded-2xl"
                 style={{
-                    background: "rgba(255, 255, 255, 0.8)",
-                    backdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255, 255, 255, 0.9)",
+                    background: "white",
+                    border: "1px solid rgba(13, 148, 136, 0.1)",
                     boxShadow: "0 4px 20px rgba(13, 148, 136, 0.08)",
                     overflow: "visible",
-                    zIndex: 40,
                 }}
             >
-                <div className="flex items-start gap-6">
-                    {/* Logo */}
-                    <HomeLogo src={home.logo_url} alt={home.name} size={100} />
+                {/* Banner Area - Show cover image if available */}
+                <div
+                    className="h-32 relative rounded-t-2xl"
+                    style={{
+                        background: home.cover_image_url
+                            ? `url(${home.cover_image_url}) center/cover`
+                            : "linear-gradient(135deg, #0D9488 0%, #115E59 50%, #134E4A 100%)",
+                    }}
+                >
+                    {/* Decorative pattern - only show when no cover image */}
+                    {!home.cover_image_url && (
+                        <div
+                            className="absolute inset-0 opacity-10"
+                            style={{
+                                backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
+                            }}
+                        />
+                    )}
+                </div>
 
-                    {/* Info */}
-                    <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-2 flex-wrap">
-                            <h1 className="text-2xl font-bold" style={{ color: "#1E293B" }}>{home.name}</h1>
-                            <Badge variant={currentStatus}>
-                                {verificationStatusLabels[currentStatus] || currentStatus}
-                            </Badge>
+                {/* Profile Content */}
+                <div className="px-6 pb-6">
+                    {/* Profile Photo - Overlapping */}
+                    <div className="flex justify-between items-start">
+                        <div className="-mt-12 relative z-10">
+                            <div
+                                className="rounded-full p-1"
+                                style={{ backgroundColor: "white" }}
+                            >
+                                <HomeLogo src={home.logo_url} alt={home.name} size={96} />
+                            </div>
                         </div>
 
+                        {/* Action Buttons - Twitter style */}
+                        <div className="flex items-center gap-2 mt-3">
+                            {/* Status Dropdown - only show for non-verified homes */}
+                            {currentStatus !== "approved" && currentStatus !== "verified" && (
+                                <div className="relative z-50">
+                                    <button
+                                        onClick={() => setShowStatusDropdown(!showStatusDropdown)}
+                                        disabled={updating}
+                                        className="flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all disabled:opacity-50"
+                                        style={{
+                                            backgroundColor: "#0D9488",
+                                            color: "white"
+                                        }}
+                                    >
+                                        {updating ? (
+                                            <Loader2 size={16} className="animate-spin" />
+                                        ) : (
+                                            <>
+                                                Update Status
+                                                <ChevronDown size={16} />
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {showStatusDropdown && (
+                                        <div
+                                            className="fixed inset-0 z-30"
+                                            onClick={() => setShowStatusDropdown(false)}
+                                        />
+                                    )}
+
+                                    <AnimatePresence>
+                                        {showStatusDropdown && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: -10 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: -10 }}
+                                                className="absolute right-0 top-full mt-2 w-64 rounded-xl overflow-hidden z-50"
+                                                style={{
+                                                    backgroundColor: "white",
+                                                    boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
+                                                    border: "1px solid rgba(13, 148, 136, 0.1)",
+                                                }}
+                                                onClick={(e) => e.stopPropagation()}
+                                            >
+                                                {VERIFICATION_STATUSES.map((status) => (
+                                                    <button
+                                                        key={status}
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            updateStatus(status);
+                                                        }}
+                                                        className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
+                                                    >
+                                                        <Badge variant={status}>
+                                                            {verificationStatusLabels[status]}
+                                                        </Badge>
+                                                        {currentStatus === status && (
+                                                            <Check size={14} style={{ color: "#10B981" }} />
+                                                        )}
+                                                    </button>
+                                                ))}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
+                            )}
+
+                            {/* Account Status Dropdown */}
+                            <select
+                                value={home.account_status || "active"}
+                                aria-label="Account Status"
+                                onChange={async (e) => {
+                                    if (!supabase) return;
+                                    const newStatus = e.target.value;
+                                    try {
+                                        const { error } = await supabase
+                                            .from("homes")
+                                            .update({ account_status: newStatus })
+                                            .eq("id", home.id);
+                                        if (error) throw error;
+                                        setHome({ ...home, account_status: newStatus as "active" | "suspended" | "banned" });
+                                    } catch (err) {
+                                        console.error("Failed to update account status:", err);
+                                    }
+                                }}
+                                className="px-4 py-2 rounded-full text-sm font-medium outline-none cursor-pointer"
+                                style={{
+                                    backgroundColor: home.account_status === "banned"
+                                        ? "rgba(239, 68, 68, 0.1)"
+                                        : home.account_status === "suspended"
+                                            ? "rgba(251, 191, 36, 0.1)"
+                                            : "rgba(16, 185, 129, 0.1)",
+                                    color: home.account_status === "banned"
+                                        ? "#DC2626"
+                                        : home.account_status === "suspended"
+                                            ? "#D97706"
+                                            : "#059669",
+                                    border: "1px solid",
+                                    borderColor: home.account_status === "banned"
+                                        ? "rgba(239, 68, 68, 0.3)"
+                                        : home.account_status === "suspended"
+                                            ? "rgba(251, 191, 36, 0.3)"
+                                            : "rgba(16, 185, 129, 0.3)",
+                                }}
+                            >
+                                <option value="active">✓ Active</option>
+                                <option value="suspended">⏸ Suspended</option>
+                                <option value="banned">✕ Banned</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    {/* Name and Verification Badge - Twitter style */}
+                    <div className="mt-3">
+                        <div className="flex items-center gap-2">
+                            <h1 className="text-xl font-bold" style={{ color: "#1E293B" }}>{home.name}</h1>
+                            {(currentStatus === "approved" || currentStatus === "verified") && (
+                                <BadgeCheck size={20} style={{ color: "#0D9488" }} />
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Info Row - Location & Date */}
+                    <div className="flex items-center gap-4 mt-3 flex-wrap">
                         {home.address && (
-                            <div className="flex items-center gap-2 mb-1">
-                                <MapPin size={16} style={{ color: "#64748B" }} />
+                            <div className="flex items-center gap-1">
+                                <MapPin size={14} style={{ color: "#64748B" }} />
                                 <span className="text-sm" style={{ color: "#64748B" }}>{home.address}</span>
                             </div>
                         )}
-
-                        <div className="flex items-center gap-2">
-                            <Calendar size={16} style={{ color: "#94A3B8" }} />
-                            <span className="text-sm" style={{ color: "#94A3B8" }}>
-                                Registered {formatDate(home.created_at)}
+                        <div className="flex items-center gap-1">
+                            <Calendar size={14} style={{ color: "#64748B" }} />
+                            <span className="text-sm" style={{ color: "#64748B" }}>
+                                Joined {formatDate(home.created_at)}
                             </span>
                         </div>
                     </div>
 
-                    {/* Status Dropdown */}
-                    <div className="relative z-50">
-                        <button
-                            onClick={() => setShowStatusDropdown(!showStatusDropdown)}
-                            disabled={updating}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl font-medium transition-all disabled:opacity-50"
+                    {/* Status Description - only for pending homes */}
+                    {currentStatus !== "approved" && currentStatus !== "verified" && (
+                        <div
+                            className="mt-4 p-3 rounded-xl text-sm"
                             style={{
-                                backgroundColor: "rgba(13, 148, 136, 0.1)",
-                                color: "#0D9488"
+                                backgroundColor: "rgba(13, 148, 136, 0.05)",
+                                color: "#64748B"
                             }}
                         >
-                            {updating ? (
-                                <Loader2 size={16} className="animate-spin" />
-                            ) : (
-                                <>
-                                    Update Status
-                                    <ChevronDown size={16} />
-                                </>
-                            )}
-                        </button>
-
-                        {/* Click outside overlay - must be z-30 (below dropdown z-50) */}
-                        {showStatusDropdown && (
-                            <div
-                                className="fixed inset-0 z-30"
-                                onClick={() => setShowStatusDropdown(false)}
-                            />
-                        )}
-
-                        <AnimatePresence>
-                            {showStatusDropdown && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: -10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -10 }}
-                                    className="absolute right-0 top-full mt-2 w-64 rounded-xl overflow-hidden z-50"
-                                    style={{
-                                        backgroundColor: "white",
-                                        boxShadow: "0 10px 40px rgba(0,0,0,0.15)",
-                                        border: "1px solid rgba(13, 148, 136, 0.1)",
-                                    }}
-                                    onClick={(e) => e.stopPropagation()}
-                                >
-                                    {VERIFICATION_STATUSES.map((status) => (
-                                        <button
-                                            key={status}
-                                            onClick={(e) => {
-                                                e.stopPropagation();
-                                                updateStatus(status);
-                                            }}
-                                            className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-gray-50 transition-colors"
-                                        >
-                                            <Badge variant={status}>
-                                                {verificationStatusLabels[status]}
-                                            </Badge>
-                                            {currentStatus === status && (
-                                                <Check size={14} style={{ color: "#10B981" }} />
-                                            )}
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
-                </div>
-
-                {/* Status Description */}
-                <div
-                    className="mt-4 p-3 rounded-lg text-sm"
-                    style={{
-                        backgroundColor: "rgba(13, 148, 136, 0.03)",
-                        color: "#64748B"
-                    }}
-                >
-                    <strong>Current Status:</strong> {statusDescriptions[currentStatus] || "Unknown status"}
+                            <strong>Verification Status:</strong> {statusDescriptions[currentStatus] || "Unknown status"}
+                        </div>
+                    )}
                 </div>
             </motion.div>
 
@@ -418,18 +519,21 @@ export default function HomeDetailsPage() {
                         </div>
                         <div className="flex-1">
                             <p className="font-medium text-sm" style={{ color: "#1E293B" }}>Registration Certificate</p>
-                            <p className="text-xs" style={{ color: "#64748B" }}>PDF Document</p>
+                            <p className="text-xs" style={{ color: "#64748B" }}>Secure Document (signed URL)</p>
                         </div>
-                        <a
-                            href={home.registration_doc_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+                        <button
+                            onClick={handleViewDoc}
+                            disabled={loadingDocUrl}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-colors disabled:opacity-50"
                             style={{ backgroundColor: "#0D9488", color: "white" }}
                         >
-                            <ExternalLink size={16} />
+                            {loadingDocUrl ? (
+                                <Loader2 size={16} className="animate-spin" />
+                            ) : (
+                                <ExternalLink size={16} />
+                            )}
                             View Document
-                        </a>
+                        </button>
                     </div>
                 ) : (
                     <div className="text-center py-8 rounded-xl" style={{ backgroundColor: "rgba(251, 191, 36, 0.05)" }}>

@@ -45,7 +45,16 @@ export default function HomesPage() {
             );
         }
 
-        if (statusFilter !== "all") {
+        if (statusFilter === "pending") {
+            // Pending includes: received, reviewing, needs_documents
+            filtered = filtered.filter((home) =>
+                home.verification_status === "received" ||
+                home.verification_status === "reviewing" ||
+                home.verification_status === "needs_documents"
+            );
+        } else if (statusFilter === "approved") {
+            filtered = filtered.filter((home) => home.verification_status === "approved" || home.verified);
+        } else if (statusFilter !== "all") {
             filtered = filtered.filter((home) => home.verification_status === statusFilter);
         }
 
@@ -60,8 +69,13 @@ export default function HomesPage() {
         });
     };
 
-    const pendingCount = homes.filter((h) => h.verification_status === "pending").length;
-    const verifiedCount = homes.filter((h) => h.verification_status === "verified").length;
+    // Pending = received, reviewing, needs_documents (not yet approved/rejected)
+    const pendingCount = homes.filter((h) =>
+        h.verification_status === "received" ||
+        h.verification_status === "reviewing" ||
+        h.verification_status === "needs_documents"
+    ).length;
+    const verifiedCount = homes.filter((h) => h.verification_status === "approved" || h.verified).length;
     const rejectedCount = homes.filter((h) => h.verification_status === "rejected").length;
 
     if (isLoading) {
@@ -97,8 +111,8 @@ export default function HomesPage() {
                     <p className="text-xs" style={{ color: "#64748B" }}>Pending</p>
                 </button>
                 <button
-                    onClick={() => setStatusFilter(statusFilter === "verified" ? "all" : "verified")}
-                    className={`p-4 rounded-xl text-center transition-all ${statusFilter === "verified" ? "ring-2 ring-emerald-400" : ""}`}
+                    onClick={() => setStatusFilter(statusFilter === "approved" ? "all" : "approved")}
+                    className={`p-4 rounded-xl text-center transition-all ${statusFilter === "approved" ? "ring-2 ring-emerald-400" : ""}`}
                     style={{ backgroundColor: "rgba(16, 185, 129, 0.1)" }}
                 >
                     <CheckCircle size={24} className="mx-auto mb-1" style={{ color: "#10B981" }} />

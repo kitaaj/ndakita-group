@@ -16,7 +16,7 @@ export default function HomeLogo({ src, alt, size = 56 }: HomeLogoProps) {
     if (!src || hasError) {
         return (
             <div
-                className="rounded-xl flex items-center justify-center flex-shrink-0"
+                className="rounded-full flex items-center justify-center flex-shrink-0"
                 style={{
                     width: size,
                     height: size,
@@ -29,13 +29,20 @@ export default function HomeLogo({ src, alt, size = 56 }: HomeLogoProps) {
     }
 
     return (
-        <Image
-            src={src}
-            alt={alt}
-            width={size}
-            height={size}
-            className="rounded-xl object-cover flex-shrink-0"
-            onError={() => setHasError(true)}
-        />
+        <div
+            className="rounded-full overflow-hidden flex-shrink-0"
+            style={{ width: size, height: size }}
+        >
+            <Image
+                src={src}
+                alt={alt}
+                width={size}
+                height={size}
+                className="w-full h-full object-cover"
+                onError={() => setHasError(true)}
+            />
+        </div>
     );
 }
+
+

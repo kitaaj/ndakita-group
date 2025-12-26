@@ -35,9 +35,9 @@ export default function Sidebar({ onSignOut }: SidebarProps) {
 
     return (
         <motion.aside
-            className="h-screen flex flex-col border-r"
+            className="h-screen flex flex-col border-r sticky top-0 self-start"
             style={{
-                backgroundColor: "rgba(255, 255, 255, 0.8)",
+                backgroundColor: "rgba(255, 255, 255, 0.95)",
                 backdropFilter: "blur(20px)",
                 borderColor: "rgba(13, 148, 136, 0.1)",
             }}
