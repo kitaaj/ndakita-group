@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 
-export default function AuthCallbackPage() {
+function AuthCallbackContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
 
@@ -34,7 +34,7 @@ export default function AuthCallbackPage() {
             // Check if user has a profile and determine role
             const { data: profile } = await supabase
                 .from("profiles")
-                .select("role")
+                .select("id, role")
                 .eq("user_id", session.user.id)
                 .single();
 
@@ -44,8 +44,8 @@ export default function AuthCallbackPage() {
                 // Check if they have an existing home
                 const { data: home } = await supabase
                     .from("homes")
-                    .select("id")
-                    .eq("profile_id", profile?.id)
+                    .select("*")
+                    .eq("profile_id", profile.id)
                     .single();
 
                 if (home) {
@@ -53,11 +53,8 @@ export default function AuthCallbackPage() {
                 } else {
                     router.push("/register-home");
                 }
-            } else if (profile?.role === "donor") {
-                // Donor - send to explore page
-                router.push("/explore");
             } else {
-                // New user without profile - send to explore (they can donate without registering a home)
+                // Default to explore page for donors and new users without profile
                 router.push("/explore");
             }
         }
@@ -66,17 +63,26 @@ export default function AuthCallbackPage() {
     }, [router, searchParams]);
 
     return (
-        <div
-            className="min-h-screen flex items-center justify-center"
-            style={{ backgroundColor: "#F8FAFC" }}
-        >
+        <div className="min-h-screen flex items-center justify-center p-4">
             <div className="text-center">
-                <div
-                    className="w-12 h-12 mx-auto mb-4 rounded-full border-4 border-t-transparent animate-spin"
-                    style={{ borderColor: "#0D9488", borderTopColor: "transparent" }}
-                />
-                <p style={{ color: "#64748B" }}>Signing you in...</p>
+                <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                <p className="text-gray-600 font-medium">Signing you in...</p>
             </div>
         </div>
+    );
+}
+
+export default function AuthCallbackPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-teal-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600 font-medium">Loading...</p>
+                </div>
+            </div>
+        }>
+            <AuthCallbackContent />
+        </Suspense>
     );
 }

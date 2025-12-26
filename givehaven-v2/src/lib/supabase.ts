@@ -304,6 +304,7 @@ export interface CreateHomeData {
     contact_email?: string;
     contact_phone?: string;
     logo_url?: string;
+    cover_image_url?: string;
     registration_doc_url?: string;
 }
 

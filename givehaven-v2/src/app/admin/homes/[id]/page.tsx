@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -18,6 +19,7 @@ const VERIFICATION_STATUSES: VerificationStatus[] = [
     "reviewing",
     "needs_documents",
     "approved",
+    "verified",
     "rejected",
 ];
 
@@ -26,6 +28,7 @@ const statusDescriptions: Record<VerificationStatus, string> = {
     reviewing: "Admin is currently reviewing the application",
     needs_documents: "Additional documents required from home",
     approved: "Home has been verified and approved",
+    verified: "Home is fully verified",
     rejected: "Home application has been rejected",
 };
 

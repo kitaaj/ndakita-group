@@ -4,6 +4,7 @@ export type VerificationStatus =
     | "reviewing"
     | "needs_documents"
     | "approved"
+    | "verified"
     | "rejected";
 
 interface BadgeProps {
@@ -38,6 +39,7 @@ export const verificationStatusLabels: Record<VerificationStatus, string> = {
     reviewing: "Under Review",
     needs_documents: "More Docs Needed",
     approved: "Approved",
+    verified: "Verified",
     rejected: "Rejected",
 };
 

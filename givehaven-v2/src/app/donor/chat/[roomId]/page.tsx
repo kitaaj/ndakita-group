@@ -132,7 +132,7 @@ export default function ChatRoomPage() {
             });
 
         return () => {
-            supabase.removeChannel(channel);
+            supabase?.removeChannel(channel);
         };
     }, [params.roomId, myProfile?.id, scrollToBottom]);
 

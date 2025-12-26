@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Clock,
@@ -102,8 +102,13 @@ const statusConfig: Record<VerificationStatus, {
 };
 
 export default function VerificationBanner({ status, onDismiss }: VerificationBannerProps) {
-    const [dismissed, setDismissed] = useState(false);
-    const [hasCelebrated, setHasCelebrated] = useState(false);
+    // Initialize dismissed state from localStorage (runs once on mount)
+    const [dismissed, setDismissed] = useState(() => {
+        if (typeof window === 'undefined') return false;
+        return localStorage.getItem(`banner_dismissed_${status}`) === 'true';
+    });
+
+    const hasCelebratedRef = useRef(false);
 
     // Default config for unknown statuses
     const defaultConfig = {
@@ -115,6 +120,9 @@ export default function VerificationBanner({ status, onDismiss }: VerificationBa
         iconColor: "#64748B",
         textColor: "#475569",
         dismissible: true,
+        showAction: false,
+        actionLabel: undefined as string | undefined,
+        celebrate: false,
     };
 
     const config = (status in statusConfig)
@@ -124,8 +132,8 @@ export default function VerificationBanner({ status, onDismiss }: VerificationBa
 
     // Trigger confetti for approved/verified status
     useEffect(() => {
-        if ((status === "verified" || status === "approved") && config.celebrate && !hasCelebrated) {
-            setHasCelebrated(true);
+        if ((status === "verified" || status === "approved") && config.celebrate && !hasCelebratedRef.current) {
+            hasCelebratedRef.current = true;
             // Fire confetti
             const duration = 3 * 1000;
             const end = Date.now() + duration;
@@ -152,16 +160,7 @@ export default function VerificationBanner({ status, onDismiss }: VerificationBa
             };
             frame();
         }
-    }, [status, config.celebrate, hasCelebrated]);
-
-    // Check localStorage for dismissed state
-    useEffect(() => {
-        const dismissedKey = `banner_dismissed_${status}`;
-        const wasDismissed = localStorage.getItem(dismissedKey);
-        if (wasDismissed === 'true') {
-            setDismissed(true);
-        }
-    }, [status]);
+    }, [status, config.celebrate]);
 
     const handleDismiss = () => {
         setDismissed(true);
