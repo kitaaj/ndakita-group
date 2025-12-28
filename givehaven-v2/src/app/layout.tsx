@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Ndakita Group | Give Haven",
     description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
+    url: "https://www.ndakita.com",
     type: "website",
     locale: "en_US",
     siteName: "Give Haven by Ndakita Group",
