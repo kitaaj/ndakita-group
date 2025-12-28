@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import confetti from "canvas-confetti";
 import {
     Package,
     Clock,
@@ -11,6 +12,8 @@ import {
     Plus,
     TrendingUp,
     ArrowRight,
+    PartyPopper,
+    X,
 } from "lucide-react";
 import { getMyHome, getHomeStats, getMyNeeds, type Home, type Need } from "@/lib/supabase";
 
@@ -124,6 +127,47 @@ export default function HomeDashboard() {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentNeeds, setRecentNeeds] = useState<Need[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [bannerDismissed, setBannerDismissed] = useState(true); // Start true to prevent flash
+    const [hasShownConfetti, setHasShownConfetti] = useState(false);
+
+    // Check localStorage for banner dismissal on mount
+    useEffect(() => {
+        const dismissed = localStorage.getItem("approval_banner_dismissed");
+        setBannerDismissed(dismissed === "true");
+    }, []);
+
+    // Trigger confetti when home is verified and banner not dismissed
+    useEffect(() => {
+        if (home?.verified && !bannerDismissed && !hasShownConfetti) {
+            setHasShownConfetti(true);
+            // Fire confetti!
+            confetti({
+                particleCount: 100,
+                spread: 70,
+                origin: { y: 0.3 }
+            });
+            // Second burst
+            setTimeout(() => {
+                confetti({
+                    particleCount: 50,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 }
+                });
+                confetti({
+                    particleCount: 50,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 }
+                });
+            }, 250);
+        }
+    }, [home?.verified, bannerDismissed, hasShownConfetti]);
+
+    function dismissBanner() {
+        setBannerDismissed(true);
+        localStorage.setItem("approval_banner_dismissed", "true");
+    }
 
     useEffect(() => {
         async function loadData() {
@@ -186,6 +230,46 @@ export default function HomeDashboard() {
                     </Link>
                 )}
             </motion.div>
+
+            {/* Approval Celebration Banner */}
+            {home?.verified && !bannerDismissed && (
+                <motion.div
+                    initial={{ opacity: 0, y: -20, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -20, scale: 0.95 }}
+                    className="relative rounded-2xl p-6 overflow-hidden"
+                    style={{
+                        background: "linear-gradient(135deg, #0D9488 0%, #059669 50%, #10B981 100%)",
+                    }}
+                >
+                    {/* Decorative elements */}
+                    <div className="absolute top-0 right-0 w-32 h-32 rounded-full opacity-20" style={{ backgroundColor: "white", transform: "translate(30%, -30%)" }} />
+                    <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full opacity-10" style={{ backgroundColor: "white", transform: "translate(-30%, 30%)" }} />
+
+                    <div className="relative z-10 flex items-start justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 rounded-full" style={{ backgroundColor: "rgba(255, 255, 255, 0.2)" }}>
+                                <PartyPopper size={32} className="text-white" />
+                            </div>
+                            <div>
+                                <h2 className="text-xl font-bold text-white flex items-center gap-2">
+                                    Congratulations! 🎉
+                                </h2>
+                                <p className="text-white/90 text-sm mt-1">
+                                    Your home has been verified and approved! You can now post needs and connect with donors.
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={dismissBanner}
+                            className="p-2 rounded-full hover:bg-white/20 transition-colors"
+                            aria-label="Dismiss"
+                        >
+                            <X size={20} className="text-white" />
+                        </button>
+                    </div>
+                </motion.div>
+            )}
 
             {/* Stats Grid */}
             {stats && (
