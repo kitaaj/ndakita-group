@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
@@ -16,6 +16,7 @@ import {
     Loader2,
     AlertTriangle,
     X,
+    Shield,
 } from "lucide-react";
 import {
     getCurrentSession,
@@ -24,6 +25,7 @@ import {
     uploadFile,
     signInWithGoogle,
 } from "@/lib/supabase";
+import TurnstileWidget from "@/components/TurnstileWidget";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -39,6 +41,7 @@ export default function RegisterHomePage() {
     const [logoPreview, setLogoPreview] = useState<string | null>(null);
     const [docFile, setDocFile] = useState<File | null>(null);
     const [docName, setDocName] = useState<string | null>(null);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
     const [formData, setFormData] = useState({
         name: "",
@@ -47,6 +50,20 @@ export default function RegisterHomePage() {
         story: "",
         address: "",
     });
+
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token);
+        setError(null);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+        setError("Verification failed. Please try again.");
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
 
     useEffect(() => {
         async function checkAuth() {
@@ -142,6 +159,12 @@ export default function RegisterHomePage() {
     async function handleSubmit() {
         if (!formData.name || !formData.address) {
             setError("Please fill in all required fields.");
+            return;
+        }
+
+        // Check Turnstile verification
+        if (!turnstileToken) {
+            setError("Please complete the security verification.");
             return;
         }
 
@@ -702,6 +725,35 @@ export default function RegisterHomePage() {
                                             <span className="font-medium" style={{ color: "#1E293B" }}>Document:</span> {docName || "Not uploaded"}
                                         </p>
                                     </div>
+                                </div>
+
+                                {/* Turnstile Verification */}
+                                <div
+                                    className="p-4 rounded-lg border"
+                                    style={{
+                                        backgroundColor: "rgba(13, 148, 136, 0.05)",
+                                        borderColor: "rgba(13, 148, 136, 0.2)",
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2 mb-3">
+                                        <Shield size={16} style={{ color: "#0D9488" }} />
+                                        <span className="text-sm font-medium" style={{ color: "#1E293B" }}>
+                                            Security Verification
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-center">
+                                        <TurnstileWidget
+                                            onVerify={handleTurnstileVerify}
+                                            onError={handleTurnstileError}
+                                            onExpire={handleTurnstileExpire}
+                                            theme="light"
+                                        />
+                                    </div>
+                                    {turnstileToken && (
+                                        <p className="text-xs text-center mt-2" style={{ color: "#22C55E" }}>
+                                            ✓ Verification complete
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div

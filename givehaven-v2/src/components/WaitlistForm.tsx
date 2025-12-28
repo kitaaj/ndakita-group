@@ -1,8 +1,9 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { X } from "lucide-react";
-import { useState } from "react";
+import { X, AlertCircle } from "lucide-react";
+import { useState, useCallback } from "react";
+import TurnstileWidget from "./TurnstileWidget";
 
 interface WaitlistFormProps {
     isOpen: boolean;
@@ -16,9 +17,31 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
         message: "",
     });
     const [isSubmitted, setIsSubmitted] = useState(false);
+    const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+    const [turnstileError, setTurnstileError] = useState(false);
+
+    const handleTurnstileVerify = useCallback((token: string) => {
+        setTurnstileToken(token);
+        setTurnstileError(false);
+    }, []);
+
+    const handleTurnstileError = useCallback(() => {
+        setTurnstileToken(null);
+        setTurnstileError(true);
+    }, []);
+
+    const handleTurnstileExpire = useCallback(() => {
+        setTurnstileToken(null);
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Check Turnstile verification
+        if (!turnstileToken) {
+            setTurnstileError(true);
+            return;
+        }
 
         try {
             const formId = process.env.NEXT_PUBLIC_FORMSPREE_ID;
@@ -33,7 +56,10 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
                 },
-                body: JSON.stringify(formData)
+                body: JSON.stringify({
+                    ...formData,
+                    "cf-turnstile-response": turnstileToken,
+                })
             });
 
             if (response.ok) {
@@ -42,6 +68,7 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                     setIsSubmitted(false);
                     onClose();
                     setFormData({ name: "", email: "", message: "" });
+                    setTurnstileToken(null);
                 }, 3000);
             } else {
                 const data = await response.json();
@@ -153,9 +180,27 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                                             className="w-full px-4 py-3 rounded-xl bg-white/20 border border-white/30 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all resize-none"
                                         />
                                     </div>
+
+                                    {/* Turnstile Widget */}
+                                    <div className="flex flex-col items-center gap-2">
+                                        <TurnstileWidget
+                                            onVerify={handleTurnstileVerify}
+                                            onError={handleTurnstileError}
+                                            onExpire={handleTurnstileExpire}
+                                            theme="dark"
+                                        />
+                                        {turnstileError && (
+                                            <div className="flex items-center gap-2 text-red-300 text-sm">
+                                                <AlertCircle size={14} />
+                                                <span>Please complete the verification</span>
+                                            </div>
+                                        )}
+                                    </div>
+
                                     <button
                                         type="submit"
-                                        className="w-full py-4 bg-white text-brand-pink-deep font-bold rounded-xl text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg"
+                                        disabled={!turnstileToken}
+                                        className="w-full py-4 bg-white text-brand-pink-deep font-bold rounded-xl text-lg transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
                                     >
                                         Count Me In!
                                     </button>

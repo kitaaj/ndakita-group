@@ -113,6 +113,65 @@ export default function PrivacyPage() {
 
                         <section>
                             <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Cookies &amp; Local Storage
+                            </h2>
+                            <p className="text-base leading-relaxed mb-4" style={{ color: "#64748B" }}>
+                                We use cookies and local storage to enhance your experience on our platform:
+                            </p>
+                            <ul className="list-disc list-inside space-y-2 text-base" style={{ color: "#64748B" }}>
+                                <li><strong>Essential Cookies:</strong> Required for authentication and core platform functionality</li>
+                                <li><strong>Preference Cookies:</strong> Remember your settings and consent choices</li>
+                                <li><strong>Security Cookies:</strong> Help protect against fraud and abuse</li>
+                            </ul>
+                            <p className="text-base leading-relaxed mt-4" style={{ color: "#64748B" }}>
+                                You can manage your cookie preferences at any time. Essential cookies cannot be disabled
+                                as they are necessary for the platform to function properly.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Third-Party Services
+                            </h2>
+                            <p className="text-base leading-relaxed mb-4" style={{ color: "#64748B" }}>
+                                We use trusted third-party services to operate our platform:
+                            </p>
+                            <ul className="list-disc list-inside space-y-2 text-base" style={{ color: "#64748B" }}>
+                                <li><strong>Cloudflare:</strong> Security, performance, and bot protection (Turnstile verification)</li>
+                                <li><strong>Supabase:</strong> Authentication and database services</li>
+                                <li><strong>Netlify:</strong> Website hosting and deployment</li>
+                                <li><strong>Google:</strong> OAuth authentication for sign-in</li>
+                            </ul>
+                            <p className="text-base leading-relaxed mt-4" style={{ color: "#64748B" }}>
+                                These services may collect and process data according to their own privacy policies.
+                                We recommend reviewing their respective privacy policies for more information.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Data Retention
+                            </h2>
+                            <p className="text-base leading-relaxed" style={{ color: "#64748B" }}>
+                                We retain your personal information for as long as your account is active or as needed
+                                to provide our services. Cookie consent preferences are stored for 12 months. You may
+                                request deletion of your data at any time by contacting us.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                International Data Transfers
+                            </h2>
+                            <p className="text-base leading-relaxed" style={{ color: "#64748B" }}>
+                                Your data may be processed by our third-party service providers in countries outside
+                                your country of residence. We ensure appropriate safeguards are in place to protect
+                                your information in accordance with applicable data protection laws.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
                                 Your Rights
                             </h2>
                             <p className="text-base leading-relaxed" style={{ color: "#64748B" }}>

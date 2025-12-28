@@ -124,7 +124,56 @@ export default function TermsPage() {
                                 <li>Harassing or abusing other users</li>
                                 <li>Attempting to circumvent platform security</li>
                                 <li>Using the platform for any illegal activities</li>
+                                <li>Using automated tools, bots, or scrapers to access the platform</li>
+                                <li>Attempting to bypass security measures including bot protection</li>
                             </ul>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Cookies &amp; Data Usage
+                            </h2>
+                            <p className="text-base leading-relaxed mb-4" style={{ color: "#64748B" }}>
+                                By using GiveHaven, you agree to:
+                            </p>
+                            <ul className="list-disc list-inside space-y-2 text-base" style={{ color: "#64748B" }}>
+                                <li>The use of essential cookies required for platform functionality</li>
+                                <li>Storage of your preferences and consent choices in your browser</li>
+                                <li>Data processing as described in our Privacy Policy</li>
+                            </ul>
+                            <p className="text-base leading-relaxed mt-4" style={{ color: "#64748B" }}>
+                                You may manage optional cookies through our cookie consent interface.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Automated Verification
+                            </h2>
+                            <p className="text-base leading-relaxed" style={{ color: "#64748B" }}>
+                                We use Cloudflare Turnstile and other security measures to protect our platform
+                                from automated abuse and bots. By using our forms and interactive features, you
+                                consent to this automated verification process. This helps ensure the security
+                                and integrity of our platform for all users.
+                            </p>
+                        </section>
+
+                        <section>
+                            <h2 className="text-xl font-bold mb-4" style={{ color: "#1E293B" }}>
+                                Service Providers
+                            </h2>
+                            <p className="text-base leading-relaxed mb-4" style={{ color: "#64748B" }}>
+                                We use trusted third-party services to operate our platform:
+                            </p>
+                            <ul className="list-disc list-inside space-y-2 text-base" style={{ color: "#64748B" }}>
+                                <li><strong>Cloudflare:</strong> Security, performance optimization, and bot protection</li>
+                                <li><strong>Supabase:</strong> Database and authentication services</li>
+                                <li><strong>Netlify:</strong> Hosting and content delivery</li>
+                                <li><strong>Google:</strong> Authentication services</li>
+                            </ul>
+                            <p className="text-base leading-relaxed mt-4" style={{ color: "#64748B" }}>
+                                Your use of our platform is also subject to the terms of service of these providers.
+                            </p>
                         </section>
 
                         <section>
