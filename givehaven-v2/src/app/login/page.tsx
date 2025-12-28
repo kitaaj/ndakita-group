@@ -3,7 +3,7 @@
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import { Logo } from "@/constants/Logo";
 import { signInWithGoogle } from "@/lib/supabase";
 
 function LoginContent() {
@@ -87,12 +87,10 @@ function LoginContent() {
                 {/* Logo */}
                 <div className="text-center mb-8">
                     <div className="flex justify-center mb-4">
-                        <Image
-                            src="/logo.png"
-                            alt="GiveHaven Logo"
-                            width={80}
-                            height={80}
-                            className="w-20 h-20 object-contain"
+                        <Logo
+                            size={80}
+                            variant="dark"
+                            className="w-20 h-20"
                         />
                     </div>
                     <h1 className="text-2xl font-bold" style={{ color: "#1E293B" }}>

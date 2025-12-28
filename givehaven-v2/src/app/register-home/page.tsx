@@ -261,7 +261,7 @@ export default function RegisterHomePage() {
                     </button>
 
                     <Link
-                        href="/"
+                        href="/app"
                         className="inline-flex items-center gap-2 mt-6 text-sm"
                         style={{ color: "#64748B" }}
                     >

@@ -249,10 +249,10 @@ export default function ExplorePage() {
                     </div>
 
                     {/* Urgency Filter */}
-                    <div className="flex items-center gap-2">
-                        <Filter size={16} style={{ color: "#64748B" }} />
-                        <span className="text-sm" style={{ color: "#64748B" }}>Priority:</span>
-                        <div className="flex gap-2">
+                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
+                        <Filter size={16} className="flex-shrink-0" style={{ color: "#64748B" }} />
+                        <span className="text-sm flex-shrink-0" style={{ color: "#64748B" }}>Priority:</span>
+                        <div className="flex gap-2 flex-shrink-0">
                             {urgencyOptions.map((opt) => {
                                 const isActive = urgencyFilter === opt.value;
                                 return (

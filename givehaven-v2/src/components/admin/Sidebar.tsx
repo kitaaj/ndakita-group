@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/constants/Logo";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -55,7 +55,7 @@ export default function Sidebar({ onSignOut }: SidebarProps) {
                             exit={{ opacity: 0 }}
                             className="flex items-center gap-2"
                         >
-                            <Image src="/logo.png" alt="GiveHaven" width={32} height={32} className="w-8 h-8 rounded-lg object-contain" unoptimized />
+                            <Logo size={32} variant="dark" className="w-8 h-8" />
                             <span className="font-bold text-lg" style={{ color: "#1E293B" }}>GiveHaven</span>
                         </motion.div>
                     )}

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/constants/Logo";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronUp } from "lucide-react";
@@ -93,11 +93,9 @@ export default function Navbar() {
                     <div className="flex items-center justify-between h-16 md:h-20">
                         {/* Logo */}
                         <Link href="/app" className="flex items-center gap-2">
-                            <Image
-                                src="/logo.png"
-                                alt="GiveHaven"
-                                width={40}
-                                height={40}
+                            <Logo
+                                size={40}
+                                variant={isTransparentOnDark ? "light" : "dark"}
                                 className="w-8 h-8 md:w-10 md:h-10"
                             />
                             <span

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
+import { Logo } from "@/constants/Logo";
 import { Heart } from "lucide-react";
 
 const quickLinks = [
@@ -34,12 +34,10 @@ export default function Footer() {
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16">
                     {/* Brand Column */}
                     <div className="space-y-4">
-                        <Link href="/" className="flex items-center gap-2">
-                            <Image
-                                src="/logo.png"
-                                alt="GiveHaven"
-                                width={40}
-                                height={40}
+                        <Link href="/app" className="flex items-center gap-2">
+                            <Logo
+                                size={40}
+                                variant="dark"
                                 className="w-10 h-10"
                             />
                             <span
