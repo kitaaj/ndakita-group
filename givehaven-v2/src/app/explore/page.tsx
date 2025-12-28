@@ -259,7 +259,7 @@ export default function ExplorePage() {
                                     <button
                                         key={opt.value}
                                         onClick={() => setUrgencyFilter(opt.value)}
-                                        className="px-3 py-1.5 rounded-full text-xs font-medium transition-all"
+                                        className="px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap"
                                         style={{
                                             backgroundColor: isActive
                                                 ? opt.value === "critical" ? "rgba(239, 68, 68, 0.15)" : "rgba(13, 148, 136, 0.15)"
