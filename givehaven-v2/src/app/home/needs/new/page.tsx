@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     ArrowLeft,
     Package,
@@ -299,10 +300,13 @@ export default function NewNeedPage() {
                     </label>
                     {imagePreview ? (
                         <div className="relative inline-block">
-                            <img
+                            <Image
                                 src={imagePreview}
                                 alt="Preview"
+                                width={128}
+                                height={128}
                                 className="w-32 h-32 object-cover rounded-lg"
+                                unoptimized
                             />
                             <button
                                 type="button"

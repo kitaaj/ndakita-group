@@ -1,12 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import { signInWithGoogle } from "@/lib/supabase";
 
-export default function LoginPage() {
-    const router = useRouter();
+function LoginContent() {
+
+    const searchParams = useSearchParams();
+    const redirectPath = searchParams.get("redirect") || "";
+    const isDonorLogin = redirectPath.includes("donor");
+
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -15,13 +20,15 @@ export default function LoginPage() {
         setError(null);
 
         try {
-            const { error } = await signInWithGoogle();
+            const { error } = await signInWithGoogle(
+                redirectPath || (isDonorLogin ? "/donor/chat" : "/admin")
+            );
             if (error) {
                 setError(error.message);
                 setIsLoading(false);
             }
             // OAuth will redirect automatically
-        } catch (err) {
+        } catch {
             setError("Failed to sign in. Please try again.");
             setIsLoading(false);
         }
@@ -37,7 +44,9 @@ export default function LoginPage() {
                 <motion.div
                     className="absolute w-[600px] h-[600px] -top-40 -right-40 rounded-full"
                     style={{
-                        background: "rgba(153, 246, 228, 0.4)",
+                        background: isDonorLogin
+                            ? "rgba(153, 246, 228, 0.4)"
+                            : "rgba(99, 102, 241, 0.2)", // Teal for donor, Indigo for Admin
                         filter: "blur(100px)"
                     }}
                     animate={{
@@ -49,7 +58,9 @@ export default function LoginPage() {
                 <motion.div
                     className="absolute w-[500px] h-[500px] -bottom-32 -left-32 rounded-full"
                     style={{
-                        background: "rgba(251, 191, 36, 0.3)",
+                        background: isDonorLogin
+                            ? "rgba(251, 191, 36, 0.3)"
+                            : "rgba(244, 63, 94, 0.2)", // Amber for donor, Rose for Admin
                         filter: "blur(100px)"
                     }}
                     animate={{
@@ -68,22 +79,29 @@ export default function LoginPage() {
                     background: "rgba(255, 255, 255, 0.8)",
                     backdropFilter: "blur(24px)",
                     border: "1px solid rgba(255, 255, 255, 0.9)",
-                    boxShadow: "0 8px 32px rgba(13, 148, 136, 0.12)",
+                    boxShadow: isDonorLogin
+                        ? "0 8px 32px rgba(13, 148, 136, 0.12)"
+                        : "0 8px 32px rgba(99, 102, 241, 0.12)",
                 }}
             >
                 {/* Logo */}
                 <div className="text-center mb-8">
-                    <div
-                        className="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-2xl font-bold text-white mb-4"
-                        style={{ backgroundColor: "#0D9488" }}
-                    >
-                        G
+                    <div className="flex justify-center mb-4">
+                        <Image
+                            src="/logo.png"
+                            alt="GiveHaven Logo"
+                            width={80}
+                            height={80}
+                            className="w-20 h-20 object-contain"
+                        />
                     </div>
                     <h1 className="text-2xl font-bold" style={{ color: "#1E293B" }}>
-                        GiveHaven Admin
+                        {isDonorLogin ? "Welcome Back" : "GiveHaven Admin"}
                     </h1>
                     <p className="text-sm mt-2" style={{ color: "#64748B" }}>
-                        Sign in to access the admin dashboard
+                        {isDonorLogin
+                            ? "Sign in to manage your pledges and chats"
+                            : "Sign in to access the admin dashboard"}
                     </p>
                 </div>
 
@@ -117,7 +135,7 @@ export default function LoginPage() {
                     {isLoading ? (
                         <div
                             className="w-5 h-5 rounded-full border-2 border-t-transparent animate-spin"
-                            style={{ borderColor: "#0D9488", borderTopColor: "transparent" }}
+                            style={{ borderColor: isDonorLogin ? "#0D9488" : "#1E293B", borderTopColor: "transparent" }}
                         />
                     ) : (
                         <>
@@ -145,10 +163,20 @@ export default function LoginPage() {
                 </button>
 
                 {/* Footer */}
-                <p className="text-center text-xs mt-6" style={{ color: "#94A3B8" }}>
-                    Only authorized administrators can access this panel
-                </p>
+                {!isDonorLogin && (
+                    <p className="text-center text-xs mt-6" style={{ color: "#94A3B8" }}>
+                        Only authorized administrators can access this panel
+                    </p>
+                )}
             </motion.div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <LoginContent />
+        </Suspense>
     );
 }

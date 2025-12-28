@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     ArrowLeft,
     BadgeCheck,
@@ -194,10 +195,13 @@ export default function PublicHomeProfilePage() {
                             }}
                         >
                             {home.logo_url ? (
-                                <img
+                                <Image
                                     src={home.logo_url}
                                     alt={home.name}
+                                    width={96}
+                                    height={96}
                                     className="w-full h-full object-cover"
+                                    unoptimized
                                 />
                             ) : (
                                 <Building2 size={40} style={{ color: "#0D9488" }} />

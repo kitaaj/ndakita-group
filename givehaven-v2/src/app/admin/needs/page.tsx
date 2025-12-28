@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Search, Package, AlertTriangle, Clock, CheckCircle } from "lucide-react";
+import { Search, Package, Clock, CheckCircle } from "lucide-react";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
 import Badge from "@/components/admin/Badge";
 import { getAllNeeds, getNeedsByCategory } from "@/lib/supabase";

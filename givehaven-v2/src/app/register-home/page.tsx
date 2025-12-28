@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     ArrowLeft,
     ArrowRight,
@@ -139,56 +140,56 @@ export default function RegisterHomePage() {
     }
 
     async function handleSubmit() {
-        setError(null);
+        if (!formData.name || !formData.address) {
+            setError("Please fill in all required fields.");
+            return;
+        }
+
         setIsSubmitting(true);
+        setError(null);
 
         try {
+            // Upload logo if provided
             let logoUrl: string | undefined;
-            let docUrl: string | undefined;
-
-            // Upload files (will silently fail if storage policies aren't set up)
             if (logoFile) {
                 try {
-                    const fileName = `logos/${Date.now()}-${logoFile.name}`;
-                    logoUrl = await uploadFile("images", fileName, logoFile);
+                    const logoPath = `home-logos/${Date.now()}-${logoFile.name}`;
+                    logoUrl = await uploadFile("images", logoPath, logoFile);
                 } catch (uploadErr) {
                     console.error("Logo upload failed:", uploadErr);
                     // Continue without logo
                 }
             }
 
+            // Upload registration document if provided
+            let regDocUrl: string | undefined;
             if (docFile) {
                 try {
-                    const fileName = `docs/${Date.now()}-${docFile.name}`;
-                    docUrl = await uploadFile("documents", fileName, docFile);
+                    const docPath = `home-docs/${Date.now()}-${docFile.name}`;
+                    regDocUrl = await uploadFile("documents", docPath, docFile);
                 } catch (uploadErr) {
-                    console.error("Doc upload failed:", uploadErr);
-                    // Continue without doc
+                    console.error("Document upload failed:", uploadErr);
+                    // Continue without document
                 }
             }
 
-            console.log("Creating home with data:", {
-                name: formData.name,
-                contact_email: formData.contact_email,
-                contact_phone: formData.contact_phone,
-                story: formData.story,
-                address: formData.address,
-            });
-
+            // Create home with all data
             await createHome({
                 name: formData.name,
-                contact_email: formData.contact_email,
-                contact_phone: formData.contact_phone,
-                story: formData.story,
                 address: formData.address,
+                contact_email: formData.contact_email || undefined,
+                contact_phone: formData.contact_phone || undefined,
+                story: formData.story || undefined,
                 logo_url: logoUrl,
-                registration_doc_url: docUrl,
+                registration_doc_url: regDocUrl,
             });
 
             router.push("/home");
-        } catch (err) {
-            console.error("Failed to register home:", err);
-            setError(err instanceof Error ? err.message : "Failed to register. Please try again.");
+        } catch (err: unknown) {
+            console.error("Registration failed:", err);
+            const errorMessage = err instanceof Error ? err.message : "Unknown error occurred";
+            setError(`Failed to register: ${errorMessage}`);
+        } finally {
             setIsSubmitting(false);
         }
     }
@@ -242,7 +243,7 @@ export default function RegisterHomePage() {
                         Register Your Home
                     </h1>
                     <p className="text-sm mb-6" style={{ color: "#64748B" }}>
-                        Sign in to register your children's home and start receiving donations.
+                        Sign in to register your children&apos;s home and start receiving donations.
                     </p>
 
                     <button
@@ -309,52 +310,56 @@ export default function RegisterHomePage() {
                 </motion.div>
 
                 {/* Progress Steps */}
-                <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.1 }}
-                    className="flex items-center justify-between mb-8"
-                >
-                    {steps.map((step, index) => (
-                        <div key={step.number} className="flex items-center">
-                            <div className="flex flex-col items-center">
-                                <div
-                                    className="w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all"
-                                    style={{
-                                        backgroundColor: currentStep >= step.number
-                                            ? "#0D9488"
-                                            : "rgba(13, 148, 136, 0.1)",
-                                        color: currentStep >= step.number
-                                            ? "white"
-                                            : "#64748B",
-                                    }}
-                                >
-                                    {currentStep > step.number ? (
-                                        <CheckCircle size={18} />
-                                    ) : (
-                                        step.number
-                                    )}
+                <div className="relative mb-12 px-4">
+                    {/* Background Line */}
+                    <div className="absolute top-5 left-0 w-full h-1 bg-gray-200 rounded-full" />
+
+                    {/* Active Line (Animated) */}
+                    <motion.div
+                        className="absolute top-5 left-0 h-1 bg-teal-600 rounded-full"
+                        initial={{ width: "0%" }}
+                        animate={{ width: `${((currentStep - 1) / (steps.length - 1)) * 100}%` }}
+                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                    />
+
+                    <div className="relative flex justify-between">
+                        {steps.map((step) => {
+                            const isActive = currentStep === step.number;
+                            const isCompleted = currentStep > step.number;
+
+                            return (
+                                <div key={step.number} className="flex flex-col items-center group cursor-default">
+                                    <motion.div
+                                        className={`w-10 h-10 rounded-full flex items-center justify-center border-4 z-10 transition-colors duration-300 ${isActive || isCompleted
+                                            ? "bg-teal-600 border-teal-100"
+                                            : "bg-white border-gray-200"
+                                            }`}
+                                        animate={{
+                                            scale: isActive ? 1.1 : 1,
+                                            boxShadow: isActive ? "0 0 0 4px rgba(13, 148, 136, 0.2)" : "none"
+                                        }}
+                                    >
+                                        {isCompleted ? (
+                                            <CheckCircle size={18} className="text-white" />
+                                        ) : (
+                                            <span className={`text-sm font-bold ${isActive ? "text-white" : "text-gray-400"}`}>
+                                                {step.number}
+                                            </span>
+                                        )}
+                                    </motion.div>
+                                    <div className="mt-3 text-center">
+                                        <p
+                                            className={`text-xs font-semibold uppercase tracking-wider transition-colors duration-300 ${isActive ? "text-teal-700" : isCompleted ? "text-teal-600" : "text-gray-400"
+                                                }`}
+                                        >
+                                            {step.label}
+                                        </p>
+                                    </div>
                                 </div>
-                                <span
-                                    className="text-xs mt-2 font-medium"
-                                    style={{ color: currentStep >= step.number ? "#0D9488" : "#64748B" }}
-                                >
-                                    {step.label}
-                                </span>
-                            </div>
-                            {index < steps.length - 1 && (
-                                <div
-                                    className="w-12 sm:w-20 h-0.5 mx-2"
-                                    style={{
-                                        backgroundColor: currentStep > step.number
-                                            ? "#0D9488"
-                                            : "rgba(13, 148, 136, 0.2)"
-                                    }}
-                                />
-                            )}
-                        </div>
-                    ))}
-                </motion.div>
+                            );
+                        })}
+                    </div>
+                </div>
 
                 {/* Error Message */}
                 {error && (
@@ -410,7 +415,7 @@ export default function RegisterHomePage() {
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="e.g., Hope Children's Home"
+                                        placeholder="Hope Children's Home"
                                         value={formData.name}
                                         onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all focus:ring-2"
@@ -502,7 +507,7 @@ export default function RegisterHomePage() {
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="e.g., 123 Main Street, Nairobi, Kenya"
+                                        placeholder="123 Main Street, Nairobi, Kenya"
                                         value={formData.address}
                                         onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
                                         className="w-full px-4 py-3 rounded-lg border text-sm outline-none transition-all focus:ring-2"
@@ -642,10 +647,13 @@ export default function RegisterHomePage() {
                                     <div className="flex items-center gap-4">
                                         {logoPreview ? (
                                             <div className="relative">
-                                                <img
+                                                <Image
                                                     src={logoPreview}
                                                     alt="Logo"
+                                                    width={96}
+                                                    height={96}
                                                     className="w-24 h-24 rounded-xl object-cover"
+                                                    unoptimized
                                                 />
                                                 <button
                                                     type="button"
@@ -705,7 +713,7 @@ export default function RegisterHomePage() {
                                 >
                                     <p className="text-sm" style={{ color: "#1E40AF" }}>
                                         <strong>What happens next?</strong> Our team will review your documents within 1-2 business days.
-                                        Once verified, you'll be able to post needs and receive donations!
+                                        Once verified, you&apos;ll be able to post needs and receive donations!
                                     </p>
                                 </div>
                             </motion.div>

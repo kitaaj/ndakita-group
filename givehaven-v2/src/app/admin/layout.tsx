@@ -46,7 +46,7 @@ export default function AdminLayout({
 
     const handleSignOut = async () => {
         await signOut();
-        router.push("/");
+        router.push("/app");
     };
 
     if (isLoading) {

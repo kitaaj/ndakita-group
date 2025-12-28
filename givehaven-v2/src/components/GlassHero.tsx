@@ -109,6 +109,7 @@ export default function GlassHero({ onJoinClick }: GlassHeroProps) {
                     initial={{ y: 20, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: 0.6, duration: 0.8 }}
+                    className="flex flex-col sm:flex-row gap-4 items-center justify-center"
                 >
                     <button
                         onClick={onJoinClick}
@@ -131,6 +132,27 @@ export default function GlassHero({ onJoinClick }: GlassHeroProps) {
                             Join the Movement <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                         </span>
                     </button>
+                    <a
+                        href="/app"
+                        className="group relative px-8 py-4 font-bold rounded-full text-lg overflow-hidden transition-all hover:scale-105 active:scale-95 border-2"
+                        style={{
+                            backgroundColor: "transparent",
+                            color: "#0D9488",
+                            borderColor: "#0D9488",
+                        }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.backgroundColor = "#0D9488";
+                            e.currentTarget.style.color = "white";
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.backgroundColor = "transparent";
+                            e.currentTarget.style.color = "#0D9488";
+                        }}
+                    >
+                        <span className="relative z-10 flex items-center gap-2">
+                            Experience the App <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                        </span>
+                    </a>
                 </motion.div>
             </motion.div>
         </section>

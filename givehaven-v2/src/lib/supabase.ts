@@ -27,12 +27,16 @@ function getClient(): SupabaseClient {
 // AUTH HELPERS
 // ============================================
 
-export async function signInWithGoogle() {
+export async function signInWithGoogle(redirectPath?: string) {
     const client = getClient();
+    const redirectTo = redirectPath
+        ? `${window.location.origin}/auth/callback?redirect=${encodeURIComponent(redirectPath)}`
+        : `${window.location.origin}/auth/callback`;
+
     const { data, error } = await client.auth.signInWithOAuth({
         provider: "google",
         options: {
-            redirectTo: `${window.location.origin}/auth/callback`,
+            redirectTo,
         },
     });
     return { data, error };
@@ -83,6 +87,7 @@ export interface Profile {
     user_id: string;
     role: UserRole;
     is_super_admin: boolean;
+    is_home_owner: boolean;
     display_name?: string;
     avatar_url?: string;
     created_at: string;
@@ -127,6 +132,7 @@ export interface Need {
     status: NeedStatus;
     quantity: number;
     image_url?: string;
+    fulfilled_quantity: number;
     completed_at?: string;
     created_at: string;
     updated_at: string;
@@ -138,6 +144,7 @@ export interface ChatRoom {
     donor_id: string;
     home_id: string;
     is_active: boolean;
+    quantity?: number;
     created_at: string;
 }
 
@@ -375,19 +382,17 @@ export async function createHome(data: CreateHomeData): Promise<Home> {
 
     if (!user) throw new Error("Not authenticated");
 
-    console.log("createHome - user id:", user.id);
-
     // Try to get profile
     let profile = await getMyProfile();
 
-    // If no profile exists, create one
+    // If no profile exists, create one with role 'donor' (default) and is_home_owner: true
     if (!profile) {
-        console.log("createHome - No profile found, creating one...");
         const { data: newProfile, error: profileError } = await client
             .from("profiles")
             .insert({
                 user_id: user.id,
-                role: "home",
+                role: "donor", // Default role is donor
+                is_home_owner: true, // Flag for home ownership
                 display_name: user.user_metadata?.full_name || user.email?.split("@")[0] || "Home User",
                 avatar_url: user.user_metadata?.avatar_url,
             })
@@ -399,10 +404,7 @@ export async function createHome(data: CreateHomeData): Promise<Home> {
             throw new Error(`Failed to create profile: ${profileError.message}`);
         }
         profile = newProfile as Profile;
-        console.log("createHome - Created profile:", profile.id);
     }
-
-    console.log("createHome - Using profile id:", profile.id);
 
     const { data: home, error } = await client
         .from("homes")
@@ -420,10 +422,10 @@ export async function createHome(data: CreateHomeData): Promise<Home> {
         throw error;
     }
 
-    // Update profile role to 'home'
+    // Set is_home_owner flag (preserves existing role - donor can also be home owner)
     await client
         .from("profiles")
-        .update({ role: "home" })
+        .update({ is_home_owner: true })
         .eq("id", profile.id);
 
     return home as Home;
@@ -575,7 +577,6 @@ export async function getMyHomeChatRooms(): Promise<(ChatRoom & { need?: Need; d
             profiles!chat_rooms_donor_id_fkey (*)
         `)
         .eq("home_id", home.id)
-        .eq("is_active", true)
         .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -742,7 +743,7 @@ export async function getPublicHomeNeeds(homeId: string): Promise<Need[]> {
 }
 
 // Create a pledge (donor claims a need)
-export async function createPledge(needId: string): Promise<{ chatRoomId: string }> {
+export async function createPledge(needId: string, quantity: number = 1): Promise<{ chatRoomId: string }> {
     const client = getClient();
     const user = await getCurrentUser();
 
@@ -786,10 +787,20 @@ export async function createPledge(needId: string): Promise<{ chatRoomId: string
 
     if (needError || !need) throw new Error("Need not found or already claimed");
 
-    // Update need status to pending_pickup
+    // Calculate new fulfilled quantity
+    const currentFulfilled = need.fulfilled_quantity || 0;
+    const newFulfilled = currentFulfilled + quantity;
+    const isFullyPledged = newFulfilled >= need.quantity;
+
+    // Update need status if fully pledged
+    const updateData: Partial<Need> = { fulfilled_quantity: newFulfilled };
+    if (isFullyPledged) {
+        updateData.status = "pending_pickup";
+    }
+
     const { error: updateError } = await client
         .from("needs")
-        .update({ status: "pending_pickup" })
+        .update(updateData)
         .eq("id", needId);
 
     if (updateError) throw updateError;
@@ -802,12 +813,17 @@ export async function createPledge(needId: string): Promise<{ chatRoomId: string
             donor_id: profile.id,
             home_id: need.homes.id,
             is_active: true,
+            quantity: quantity,
         })
         .select()
         .single();
 
     if (chatError) {
-        await client.from("needs").update({ status: "active" }).eq("id", needId);
+        // Rollback need update if chat creation fails
+        await client.from("needs").update({
+            status: "active",
+            fulfilled_quantity: currentFulfilled
+        }).eq("id", needId);
         throw chatError;
     }
 
@@ -817,7 +833,7 @@ export async function createPledge(needId: string): Promise<{ chatRoomId: string
         action: "pledge",
         entity_type: "need",
         entity_id: needId,
-        metadata: { need_title: need.title, chat_room_id: chatRoom.id },
+        metadata: { need_title: need.title, chat_room_id: chatRoom.id, quantity },
     });
 
     return { chatRoomId: chatRoom.id };
@@ -834,7 +850,6 @@ export async function getMyDonorChats(): Promise<(ChatRoom & { need?: Need; home
         .from("chat_rooms")
         .select(`*, needs (*), homes (*)`)
         .eq("donor_id", profile.id)
-        .eq("is_active", true)
         .order("created_at", { ascending: false });
 
     if (error) throw error;
@@ -907,21 +922,38 @@ export async function getChatRoom(roomId: string): Promise<(ChatRoom & { need?: 
 }
 
 // Confirm receipt of donation (called by home owner)
-export async function confirmDonationReceipt(needId: string): Promise<void> {
+// Archive chat room (ensure quantity received)
+// Note: This does NOT necessarily complete the need status, just archives the chat interaction
+export async function confirmDonationReceipt(needId: string, roomId?: string): Promise<void> {
     const client = getClient();
     const home = await getMyHome();
 
     if (!home) throw new Error("Not authenticated as home");
 
-    const { error } = await client
+    // Archive the chat room
+    const query = client.from("chat_rooms").update({ is_active: false });
+
+    // If roomId is provided (preferred), use it. Otherwise archive all chats for this need (legacy behavior)
+    if (roomId) {
+        await query.eq("id", roomId);
+    } else {
+        await query.eq("need_id", needId);
+    }
+
+    // Check if the need is fully fulfilled
+    const { data: need } = await client
         .from("needs")
-        .update({ status: "completed", completed_at: new Date().toISOString() })
+        .select("*")
         .eq("id", needId)
-        .eq("home_id", home.id);
+        .single();
 
-    if (error) throw error;
-
-    await client.from("chat_rooms").update({ is_active: false }).eq("need_id", needId);
+    if (need && need.fulfilled_quantity >= need.quantity) {
+        // If fully fulfilled, mark as completed
+        await client
+            .from("needs")
+            .update({ status: "completed", completed_at: new Date().toISOString() })
+            .eq("id", needId);
+    }
 
     const profile = await getMyProfile();
     if (profile) {
@@ -930,7 +962,7 @@ export async function confirmDonationReceipt(needId: string): Promise<void> {
             action: "complete",
             entity_type: "need",
             entity_id: needId,
-            metadata: {},
+            metadata: { roomId },
         });
     }
 }

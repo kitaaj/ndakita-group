@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     MessageCircle,
     Package,
@@ -35,6 +36,17 @@ export default function MessagesPage() {
 
         loadChatRooms();
     }, []);
+
+    const [activeTab, setActiveTab] = useState<"active" | "archived">("active");
+
+    const filteredChats = chatRooms.filter(room => {
+        // Strict whitelist for Active tab:
+        // Must be active AND need status must be active or pending_pickup
+        const isActiveState = room.is_active && (room.needs?.status === "active" || room.needs?.status === "pending_pickup");
+
+        if (activeTab === "active") return isActiveState;
+        return !isActiveState; // Everything else goes to archive
+    });
 
     function formatDate(dateString: string): string {
         const date = new Date(dateString);
@@ -77,8 +89,38 @@ export default function MessagesPage() {
                 </p>
             </motion.div>
 
+            {/* Tabs */}
+            <div className="flex gap-2 border-b border-gray-100">
+                <button
+                    onClick={() => setActiveTab("active")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors relative ${activeTab === "active" ? "text-teal-600" : "text-gray-500 hover:text-gray-700"
+                        }`}
+                >
+                    Active
+                    {activeTab === "active" && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600"
+                        />
+                    )}
+                </button>
+                <button
+                    onClick={() => setActiveTab("archived")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors relative ${activeTab === "archived" ? "text-teal-600" : "text-gray-500 hover:text-gray-700"
+                        }`}
+                >
+                    Archived
+                    {activeTab === "archived" && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600"
+                        />
+                    )}
+                </button>
+            </div>
+
             {/* Chat List */}
-            {chatRooms.length > 0 ? (
+            {filteredChats.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -90,7 +132,7 @@ export default function MessagesPage() {
                         borderColor: "rgba(13, 148, 136, 0.1)",
                     }}
                 >
-                    {chatRooms.map((room, index) => (
+                    {filteredChats.map((room) => (
                         <Link
                             key={room.id}
                             href={`/home/messages/${room.id}`}
@@ -103,14 +145,13 @@ export default function MessagesPage() {
                                 style={{ backgroundColor: "rgba(59, 130, 246, 0.1)" }}
                             >
                                 {room.profiles?.avatar_url && room.profiles.avatar_url.trim() !== "" ? (
-                                    <img
+                                    <Image
                                         src={room.profiles.avatar_url}
                                         alt={room.profiles.display_name || "Donor"}
+                                        width={48}
+                                        height={48}
                                         className="w-12 h-12 rounded-full object-cover"
-                                        onError={(e) => {
-                                            // Hide broken image and show fallback
-                                            e.currentTarget.style.display = "none";
-                                        }}
+                                        unoptimized
                                     />
                                 ) : null}
                                 {/* Fallback icon - always rendered but overlapped by image when valid */}
@@ -155,7 +196,7 @@ export default function MessagesPage() {
                         No messages yet
                     </h3>
                     <p className="text-sm mb-4" style={{ color: "#64748B" }}>
-                        When donors pledge to fulfill your needs, you'll be able to chat with them here.
+                        When donors pledge to fulfill your needs, you&apos;ll be able to chat with them here.
                     </p>
                     <Link
                         href="/home/needs"

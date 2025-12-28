@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Home, Package, Users, CheckCircle, Clock, AlertTriangle } from "lucide-react";
+import Link from "next/link";
 import StatsCard from "@/components/admin/StatsCard";
 import Badge from "@/components/admin/Badge";
 import { getAdminStats, getRecentActivity, getPendingHomes, type ActivityLog, type Home as HomeType } from "@/lib/supabase";
@@ -176,7 +177,7 @@ export default function AdminDashboard() {
                                             <p className="text-xs" style={{ color: "#64748B" }}>{formatDate(home.created_at)}</p>
                                         </div>
                                     </div>
-                                    <a
+                                    <Link
                                         href={`/admin/homes/${home.id}`}
                                         className="text-sm font-medium px-3 py-1.5 rounded-lg transition-colors"
                                         style={{ color: "#0D9488", backgroundColor: "rgba(13, 148, 136, 0.1)" }}
@@ -184,17 +185,17 @@ export default function AdminDashboard() {
                                         onMouseLeave={(e) => e.currentTarget.style.backgroundColor = "rgba(13, 148, 136, 0.1)"}
                                     >
                                         Review
-                                    </a>
+                                    </Link>
                                 </div>
                             ))}
                             {pendingHomes.length > 3 && (
-                                <a
+                                <Link
                                     href="/admin/homes?status=pending"
                                     className="block text-center text-sm font-medium py-2"
                                     style={{ color: "#0D9488" }}
                                 >
                                     View all {pendingHomes.length} pending →
-                                </a>
+                                </Link>
                             )}
                         </div>
                     )}
@@ -237,9 +238,6 @@ export default function AdminDashboard() {
                                     <div className="flex-1 min-w-0">
                                         <p className="text-sm font-medium truncate" style={{ color: "#1E293B" }}>
                                             {getActionLabel(activity)}
-                                            {activity.user_id && (
-                                                <span className="text-xs ml-2" style={{ color: "#94A3B8" }}>• by Admin</span>
-                                            )}
                                         </p>
                                         <p className="text-xs" style={{ color: "#64748B" }}>
                                             {formatDate(activity.created_at)}
@@ -247,13 +245,13 @@ export default function AdminDashboard() {
                                     </div>
                                 </div>
                             ))}
-                            <a
+                            <Link
                                 href="/admin/logs"
                                 className="block text-center text-sm font-medium py-2"
                                 style={{ color: "#0D9488" }}
                             >
                                 View all activity →
-                            </a>
+                            </Link>
                         </div>
                     )}
                 </motion.div>

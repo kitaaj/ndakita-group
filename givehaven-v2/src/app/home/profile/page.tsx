@@ -2,13 +2,13 @@
 
 import { useEffect, useState, useRef } from "react";
 import { motion } from "framer-motion";
+import Image from "next/image";
 import {
     User,
     MapPin,
     Phone,
     Mail,
     FileText,
-    Upload,
     Loader2,
     CheckCircle,
     AlertTriangle,
@@ -171,26 +171,27 @@ export default function ProfilePage() {
 
     const isVerified = home?.verified || home?.verification_status === "approved" || home?.verification_status === "verified";
 
-    useEffect(() => {
-        async function loadHome() {
-            try {
-                const homeData = await getMyHome();
-                if (homeData) {
-                    setHome(homeData);
-                    if (homeData.logo_url) {
-                        setLogoPreview(homeData.logo_url);
-                    }
-                    if (homeData.cover_image_url) {
-                        setCoverPreview(homeData.cover_image_url);
-                    }
+    async function loadHome() {
+        try {
+            const homeData = await getMyHome();
+            if (homeData) {
+                setHome(homeData);
+                if (homeData.logo_url) {
+                    setLogoPreview(homeData.logo_url);
                 }
-            } catch (error) {
-                console.error("Failed to load home:", error);
-            } finally {
-                setIsLoading(false);
+                if (homeData.cover_image_url) {
+                    setCoverPreview(homeData.cover_image_url);
+                }
             }
+        } catch (error) {
+            console.error("Failed to load home:", error);
+        } finally {
+            setIsLoading(false);
         }
+    }
 
+
+    useEffect(() => {
         loadHome();
     }, []);
 
@@ -386,11 +387,13 @@ export default function ProfilePage() {
                         >
                             {logoPreview ? (
                                 <div className="w-full h-full relative">
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                                    <img
+                                    <Image
                                         src={logoPreview}
                                         alt="Profile"
+                                        width={96}
+                                        height={96}
                                         className="w-full h-full object-cover"
+                                        unoptimized
                                     />
                                     {/* Hover overlay */}
                                     <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center rounded-full">

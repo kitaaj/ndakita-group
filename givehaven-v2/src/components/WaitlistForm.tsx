@@ -47,10 +47,11 @@ export default function WaitlistForm({ isOpen, onClose }: WaitlistFormProps) {
                 const data = await response.json();
 
                 if (data.errors) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     alert("Error: " + data.errors.map((e: any) => e.message).join(", "));
                 }
             }
-        } catch (error) {
+        } catch {
 
             alert("Network error. Please try again.");
         }

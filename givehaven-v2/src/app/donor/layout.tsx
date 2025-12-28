@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     Search,
@@ -87,7 +88,7 @@ export default function DonorLayout({
 
     async function handleSignOut() {
         await signOut();
-        router.push("/");
+        router.push("/app");
     }
 
     if (isLoading) {
@@ -114,7 +115,7 @@ export default function DonorLayout({
             >
                 {/* Logo */}
                 <div className="p-6">
-                    <Link href="/" className="flex items-center gap-3">
+                    <Link href="/app" className="flex items-center gap-3">
                         <div
                             className="w-10 h-10 rounded-xl flex items-center justify-center"
                             style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}
@@ -171,11 +172,13 @@ export default function DonorLayout({
                             style={{ backgroundColor: "rgba(13, 148, 136, 0.15)" }}
                         >
                             {(profile?.avatar_url || avatarUrl) ? (
-                                <img
+                                <Image
                                     src={profile?.avatar_url || avatarUrl || ""}
                                     alt="Profile"
+                                    width={40}
+                                    height={40}
                                     className="w-full h-full object-cover"
-                                    onError={(e) => { e.currentTarget.style.display = "none"; }}
+                                    unoptimized
                                 />
                             ) : null}
                             <User size={18} style={{ color: "#0D9488" }} />
@@ -210,7 +213,7 @@ export default function DonorLayout({
                 }}
             >
                 <div className="flex items-center justify-between px-4 h-16">
-                    <Link href="/" className="flex items-center gap-2">
+                    <Link href="/app" className="flex items-center gap-2">
                         <div
                             className="w-8 h-8 rounded-lg flex items-center justify-center"
                             style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}
@@ -257,7 +260,7 @@ export default function DonorLayout({
                             <div className="flex flex-col h-full">
                                 <div className="p-4 border-b" style={{ borderColor: "rgba(13, 148, 136, 0.1)" }}>
                                     <div className="flex items-center justify-between">
-                                        <Link href="/" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
+                                        <Link href="/app" className="flex items-center gap-2" onClick={() => setIsMobileMenuOpen(false)}>
                                             <Gift size={24} style={{ color: "#0D9488" }} />
                                             <span className="font-bold text-lg" style={{ color: "#1E293B" }}>GiveHaven</span>
                                         </Link>
@@ -310,10 +313,13 @@ export default function DonorLayout({
                                             style={{ backgroundColor: "rgba(13, 148, 136, 0.15)" }}
                                         >
                                             {(profile?.avatar_url || avatarUrl) ? (
-                                                <img
+                                                <Image
                                                     src={profile?.avatar_url || avatarUrl || ""}
                                                     alt="Profile"
+                                                    width={40}
+                                                    height={40}
                                                     className="w-full h-full object-cover"
+                                                    unoptimized
                                                 />
                                             ) : null}
                                             <User size={18} style={{ color: "#0D9488" }} />

@@ -18,6 +18,8 @@ import {
     HandHeart,
 } from "lucide-react";
 import NeedCard from "@/components/explore/NeedCard";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import {
     getPublicActiveNeeds,
     createPledge,
@@ -109,11 +111,15 @@ export default function ExplorePage() {
         setFilteredNeeds(result);
     }, [needs, categoryFilter, urgencyFilter, searchQuery]);
 
+    const [pledgeQuantity, setPledgeQuantity] = useState(1);
+
     function handlePledgeClick(needId: string) {
         const need = needs.find(n => n.id === needId);
         if (!need) return;
 
         setSelectedNeed(need);
+        // Default pledge is 1, max is remaining
+        setPledgeQuantity(1);
         setShowPledgeModal(true);
     }
 
@@ -128,7 +134,7 @@ export default function ExplorePage() {
 
         setPledgingNeedId(selectedNeed.id);
         try {
-            const { chatRoomId } = await createPledge(selectedNeed.id);
+            const { chatRoomId } = await createPledge(selectedNeed.id, pledgeQuantity);
             setShowPledgeModal(false);
             router.push(`/donor/chat/${chatRoomId}`);
         } catch (error) {
@@ -152,6 +158,8 @@ export default function ExplorePage() {
 
     return (
         <div className="min-h-screen" style={{ backgroundColor: "#F8FAFC" }}>
+            <Navbar />
+
             {/* Hero Header */}
             <div
                 className="relative overflow-hidden"
@@ -165,7 +173,7 @@ export default function ExplorePage() {
                         backgroundImage: "url(\"data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E\")",
                     }}
                 />
-                <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16 relative">
+                <div className="max-w-7xl mx-auto px-4 py-20 sm:py-24 relative">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -377,15 +385,60 @@ export default function ExplorePage() {
                                     <p className="text-sm mb-2" style={{ color: "#64748B" }}>
                                         {selectedNeed.description}
                                     </p>
-                                    <p className="text-xs" style={{ color: "#0D9488" }}>
-                                        For: {selectedNeed.home.name}
-                                    </p>
+                                    <div className="flex items-center justify-between text-xs mt-3 pt-3 border-t border-gray-100">
+                                        <span style={{ color: "#0D9488" }}>
+                                            For: {selectedNeed.home.name}
+                                        </span>
+                                        <span className="text-gray-500">
+                                            Needed: {selectedNeed.quantity} • Remaining: {selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Quantity Selector */}
+                                <div className="mb-6">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        How many can you provide?
+                                    </label>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => setPledgeQuantity(Math.max(1, pledgeQuantity - 1))}
+                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                            disabled={pledgeQuantity <= 1}
+                                        >
+                                            -
+                                        </button>
+                                        <input
+                                            type="number"
+                                            min="1"
+                                            max={selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
+                                            value={pledgeQuantity}
+                                            onChange={(e) => {
+                                                const val = parseInt(e.target.value);
+                                                const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
+                                                if (!isNaN(val)) {
+                                                    setPledgeQuantity(Math.max(1, Math.min(max, val)));
+                                                }
+                                            }}
+                                            className="flex-1 h-10 text-center border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                                        />
+                                        <button
+                                            onClick={() => {
+                                                const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
+                                                setPledgeQuantity(Math.min(max, pledgeQuantity + 1));
+                                            }}
+                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                            disabled={pledgeQuantity >= (selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0))}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
                                 </div>
 
                                 <p className="text-sm mb-6" style={{ color: "#64748B" }}>
                                     By pledging, you&apos;ll be connected directly with{" "}
                                     <strong>{selectedNeed.home.name}</strong> to coordinate the donation.
-                                    A chat room will be created for you to discuss pickup/delivery details.
+                                    A chat room will be created for you.
                                 </p>
 
                                 {!isAuthenticated && (
@@ -434,6 +487,8 @@ export default function ExplorePage() {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <Footer />
         </div>
     );
 }

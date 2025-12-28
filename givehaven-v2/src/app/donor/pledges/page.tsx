@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     Gift,
     Package,
@@ -13,6 +14,7 @@ import {
     BadgeCheck,
     MessageCircle,
     Search,
+    CircleDashed,
 } from "lucide-react";
 import {
     getMyDonorChats,
@@ -48,12 +50,12 @@ export default function MyPledgesPage() {
 
     const filteredPledges = pledges.filter((p) => {
         if (filter === "all") return true;
-        if (filter === "pending") return p.need?.status === "pending_pickup";
+        if (filter === "pending") return p.need?.status === "pending_pickup" || p.need?.status === "active";
         if (filter === "completed") return p.need?.status === "completed";
         return true;
     });
 
-    const pendingCount = pledges.filter((p) => p.need?.status === "pending_pickup").length;
+    const pendingCount = pledges.filter((p) => p.need?.status === "pending_pickup" || p.need?.status === "active").length;
     const completedCount = pledges.filter((p) => p.need?.status === "completed").length;
 
     function formatDate(dateString: string) {
@@ -231,10 +233,13 @@ export default function MyPledgesPage() {
                                         }}
                                     >
                                         {pledge.home?.logo_url ? (
-                                            <img
+                                            <Image
                                                 src={pledge.home.logo_url}
                                                 alt={pledge.home.name}
+                                                width={48}
+                                                height={48}
                                                 className="w-full h-full object-cover"
+                                                unoptimized
                                             />
                                         ) : (
                                             <Building2 size={20} style={{ color: "#0D9488" }} />
@@ -255,20 +260,30 @@ export default function MyPledgesPage() {
                                                     backgroundColor:
                                                         pledge.need?.status === "pending_pickup"
                                                             ? "rgba(251, 191, 36, 0.15)"
-                                                            : "rgba(34, 197, 94, 0.15)",
+                                                            : pledge.need?.status === "active"
+                                                                ? "rgba(59, 130, 246, 0.15)"
+                                                                : "rgba(34, 197, 94, 0.15)",
                                                     color:
                                                         pledge.need?.status === "pending_pickup"
                                                             ? "#F59E0B"
-                                                            : "#22C55E",
+                                                            : pledge.need?.status === "active"
+                                                                ? "#3B82F6"
+                                                                : "#22C55E",
                                                 }}
                                             >
                                                 {pledge.need?.status === "pending_pickup" ? (
                                                     <Clock size={10} />
+                                                ) : pledge.need?.status === "active" ? (
+                                                    <CircleDashed size={10} />
                                                 ) : (
                                                     <CheckCircle size={10} />
                                                 )}
                                                 <span className="hidden sm:inline">
-                                                    {pledge.need?.status === "pending_pickup" ? "Pending" : "Done"}
+                                                    {pledge.need?.status === "pending_pickup"
+                                                        ? "Pending Pickup"
+                                                        : pledge.need?.status === "active"
+                                                            ? "Active"
+                                                            : "Completed"}
                                                 </span>
                                             </span>
                                         </div>

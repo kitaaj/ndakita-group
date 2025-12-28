@@ -13,6 +13,7 @@ import {
     Loader2,
     User,
     Check,
+    CircleDashed,
 } from "lucide-react";
 import {
     supabase,
@@ -125,9 +126,7 @@ export default function HomeOwnerChatRoomPage() {
                     }
                 }
             )
-            .subscribe((status) => {
-                console.log("Home realtime subscription status:", status);
-            });
+            .subscribe();
 
         return () => {
             supabase?.removeChannel(channel);
@@ -271,22 +270,43 @@ export default function HomeOwnerChatRoomPage() {
                                         backgroundColor:
                                             chatRoom.need.status === "pending_pickup"
                                                 ? "rgba(251, 191, 36, 0.15)"
-                                                : "rgba(34, 197, 94, 0.15)",
+                                                : chatRoom.need.status === "active"
+                                                    ? "rgba(59, 130, 246, 0.15)"
+                                                    : "rgba(34, 197, 94, 0.15)",
                                         color:
                                             chatRoom.need.status === "pending_pickup"
                                                 ? "#F59E0B"
-                                                : "#22C55E",
+                                                : chatRoom.need.status === "active"
+                                                    ? "#3B82F6"
+                                                    : "#22C55E",
                                     }}
                                 >
                                     {chatRoom.need.status === "pending_pickup" ? (
                                         <Clock size={10} />
+                                    ) : chatRoom.need.status === "active" ? (
+                                        <CircleDashed size={10} />
                                     ) : (
                                         <CheckCircle size={10} />
                                     )}
                                     {chatRoom.need.status === "pending_pickup"
                                         ? "Pending"
-                                        : "Complete"}
+                                        : chatRoom.need.status === "active"
+                                            ? "Active"
+                                            : "Complete"}
                                 </span>
+                                {(chatRoom.quantity || 1) > 0 && (
+                                    <span
+                                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs"
+                                        style={{
+                                            backgroundColor: "rgba(13, 148, 136, 0.1)",
+                                            color: "#0D9488",
+                                            border: "1px solid rgba(13, 148, 136, 0.2)",
+                                        }}
+                                    >
+                                        <CircleDashed size={10} />
+                                        Qty: {chatRoom.quantity || 1}
+                                    </span>
+                                )}
                             </div>
                         )}
                     </div>
@@ -307,7 +327,7 @@ export default function HomeOwnerChatRoomPage() {
                             ) : (
                                 <Check size={16} />
                             )}
-                            Confirm Receipt
+                            Confirm Receipt & Archive
                         </button>
                     )}
                 </div>
@@ -406,42 +426,48 @@ export default function HomeOwnerChatRoomPage() {
                     borderTop: "1px solid rgba(13, 148, 136, 0.1)",
                 }}
             >
-                <div className="flex items-center gap-2 md:gap-3">
-                    <input
-                        type="text"
-                        placeholder="Type a message..."
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === "Enter" && !e.shiftKey) {
-                                e.preventDefault();
-                                handleSend();
-                            }
-                        }}
-                        className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2"
-                        style={{
-                            backgroundColor: "#F8FAFC",
-                            borderColor: "rgba(13, 148, 136, 0.2)",
-                            color: "#1E293B",
-                        }}
-                    />
-                    <button
-                        onClick={handleSend}
-                        disabled={!newMessage.trim() || isSending}
-                        className="p-2.5 md:p-3 rounded-xl transition-all disabled:opacity-50 hover:opacity-90 flex-shrink-0"
-                        style={{
-                            backgroundColor: "#0D9488",
-                            color: "white",
-                        }}
-                        aria-label="Send message"
-                    >
-                        {isSending ? (
-                            <Loader2 size={20} className="animate-spin" />
-                        ) : (
-                            <Send size={20} />
-                        )}
-                    </button>
-                </div>
+                {(!chatRoom.is_active || chatRoom.need?.status === "completed") ? (
+                    <div className="text-center py-2 text-sm text-gray-500 bg-gray-50 rounded-lg border border-gray-100 italic">
+                        You can no longer send messages to this chat. This chatroom was closed.
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2 md:gap-3">
+                        <input
+                            type="text"
+                            placeholder="Type a message..."
+                            value={newMessage}
+                            onChange={(e) => setNewMessage(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSend();
+                                }
+                            }}
+                            className="flex-1 px-3 md:px-4 py-2.5 md:py-3 rounded-xl border text-sm outline-none transition-all focus:ring-2"
+                            style={{
+                                backgroundColor: "#F8FAFC",
+                                borderColor: "rgba(13, 148, 136, 0.2)",
+                                color: "#1E293B",
+                            }}
+                        />
+                        <button
+                            onClick={handleSend}
+                            disabled={!newMessage.trim() || isSending}
+                            className="p-2.5 md:p-3 rounded-xl transition-all disabled:opacity-50 hover:opacity-90 flex-shrink-0"
+                            style={{
+                                backgroundColor: "#0D9488",
+                                color: "white",
+                            }}
+                            aria-label="Send message"
+                        >
+                            {isSending ? (
+                                <Loader2 size={20} className="animate-spin" />
+                            ) : (
+                                <Send size={20} />
+                            )}
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );

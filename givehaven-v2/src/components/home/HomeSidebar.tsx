@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import Image from "next/image";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -37,30 +38,36 @@ export default function HomeSidebar({ onSignOut, homeName, logoUrl, isVerified }
     const [unreadCount, setUnreadCount] = useState(0);
     const [pendingPledgesCount, setPendingPledgesCount] = useState(0);
 
-    const loadCounts = useCallback(async () => {
-        try {
-            const [unread, pledges] = await Promise.all([
-                getHomeUnreadCount(),
-                getHomePendingPledgesCount(),
-            ]);
-            setUnreadCount(unread);
-            setPendingPledgesCount(pledges);
-        } catch (error) {
-            console.error("Failed to load notification counts:", error);
-        }
-    }, []);
-
     useEffect(() => {
-        loadCounts();
+        let mounted = true;
+
+        const fetchCounts = async () => {
+            try {
+                const [unread, pledges] = await Promise.all([
+                    getHomeUnreadCount(),
+                    getHomePendingPledgesCount(),
+                ]);
+
+                if (mounted) {
+                    setUnreadCount(unread);
+                    setPendingPledgesCount(pledges);
+                }
+            } catch (error) {
+                console.error("Failed to load notification counts:", error);
+            }
+        };
+
+        // Initial fetch
+        fetchCounts();
+
         // Refresh counts every 30 seconds
-        const interval = setInterval(loadCounts, 30000);
-        return () => clearInterval(interval);
-    }, [loadCounts]);
+        const interval = setInterval(fetchCounts, 30000);
 
-    // Refresh when path changes
-    useEffect(() => {
-        loadCounts();
-    }, [pathname, loadCounts]);
+        return () => {
+            mounted = false;
+            clearInterval(interval);
+        };
+    }, [pathname]); // Re-run when path changes (navigation)
 
     const getBadgeCount = (badgeKey: string | null) => {
         if (badgeKey === "messages") return unreadCount;
@@ -91,10 +98,13 @@ export default function HomeSidebar({ onSignOut, homeName, logoUrl, isVerified }
                         >
                             <div className="relative">
                                 {logoUrl ? (
-                                    <img
+                                    <Image
                                         src={logoUrl}
                                         alt={homeName || "Home"}
+                                        width={40}
+                                        height={40}
                                         className="w-10 h-10 rounded-full object-cover"
+                                        unoptimized
                                     />
                                 ) : (
                                     <div
@@ -212,7 +222,7 @@ export default function HomeSidebar({ onSignOut, homeName, logoUrl, isVerified }
             {/* Back to Main & Sign Out */}
             <div className="p-2 border-t space-y-1" style={{ borderColor: "rgba(13, 148, 136, 0.1)" }}>
                 <Link
-                    href="/"
+                    href="/app"
                     className="flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors w-full"
                     style={{ color: "#64748B" }}
                     onMouseEnter={(e) => e.currentTarget.style.backgroundColor = "rgba(13, 148, 136, 0.05)"}

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     LayoutDashboard,
@@ -54,9 +55,13 @@ export default function HomeLayout({
                 const homeData = await getMyHome();
 
                 if (!homeData) {
-                    // If no home profile, redirect to registration
                     router.push("/register-home");
                     return;
+                }
+
+                if (!homeData.verified && homeData.verification_status !== "approved") {
+                    // Could redirect to a "pending" page, but for now just show layout with pending banner
+                    // setPendingVerification(true);
                 }
 
                 setHome(homeData);
@@ -95,7 +100,7 @@ export default function HomeLayout({
 
     const handleSignOut = async () => {
         await signOut();
-        router.push("/");
+        router.push("/app");
     };
 
     const getBadgeCount = (badgeKey: string | null) => {
@@ -150,10 +155,13 @@ export default function HomeLayout({
                 <div className="flex items-center gap-3">
                     <div className="relative">
                         {home?.logo_url ? (
-                            <img
+                            <Image
                                 src={home.logo_url}
                                 alt={home?.name || "Home"}
+                                width={36}
+                                height={36}
                                 className="w-9 h-9 rounded-full object-cover"
+                                unoptimized
                             />
                         ) : (
                             <div
@@ -259,7 +267,7 @@ export default function HomeLayout({
                                 {/* Footer */}
                                 <div className="p-4 border-t space-y-2" style={{ borderColor: "rgba(13, 148, 136, 0.1)" }}>
                                     <Link
-                                        href="/"
+                                        href="/app"
                                         onClick={() => setIsMobileMenuOpen(false)}
                                         className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium"
                                         style={{ color: "#64748B", backgroundColor: "rgba(248, 250, 252, 1)" }}

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
     MessageCircle,
@@ -10,6 +11,8 @@ import {
     Loader2,
     ChevronRight,
     Building2,
+    CheckCircle,
+    CircleDashed,
 } from "lucide-react";
 import {
     getMyDonorChats,
@@ -38,6 +41,17 @@ export default function DonorChatsPage() {
 
         loadChats();
     }, []);
+
+    const [activeTab, setActiveTab] = useState<"active" | "archived">("active");
+
+    const filteredChats = chats.filter(chat => {
+        // Strict whitelist for Active tab:
+        // Must be active AND need status must be active or pending_pickup
+        const isActiveState = chat.is_active && (chat.need?.status === "active" || chat.need?.status === "pending_pickup");
+
+        if (activeTab === "active") return isActiveState;
+        return !isActiveState; // Everything else goes to archive (completed, cancelled, closed)
+    });
 
     const formatDate = (dateString: string) => {
         const date = new Date(dateString);
@@ -80,14 +94,44 @@ export default function DonorChatsPage() {
                 </p>
             </motion.div>
 
+            {/* Tabs */}
+            <div className="flex gap-2 mb-6 border-b border-gray-100">
+                <button
+                    onClick={() => setActiveTab("active")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors relative ${activeTab === "active" ? "text-teal-600" : "text-gray-500 hover:text-gray-700"
+                        }`}
+                >
+                    Active
+                    {activeTab === "active" && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600"
+                        />
+                    )}
+                </button>
+                <button
+                    onClick={() => setActiveTab("archived")}
+                    className={`px-4 py-2 text-sm font-medium transition-colors relative ${activeTab === "archived" ? "text-teal-600" : "text-gray-500 hover:text-gray-700"
+                        }`}
+                >
+                    Past Pledges
+                    {activeTab === "archived" && (
+                        <motion.div
+                            layoutId="activeTab"
+                            className="absolute bottom-0 left-0 right-0 h-0.5 bg-teal-600"
+                        />
+                    )}
+                </button>
+            </div>
+
             {/* Chat List */}
-            {chats.length > 0 ? (
+            {filteredChats.length > 0 ? (
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="space-y-3"
                 >
-                    {chats.map((chat, index) => (
+                    {filteredChats.map((chat, index) => (
                         <motion.div
                             key={chat.id}
                             initial={{ opacity: 0, y: 20 }}
@@ -114,10 +158,13 @@ export default function DonorChatsPage() {
                                         }}
                                     >
                                         {chat.home?.logo_url ? (
-                                            <img
+                                            <Image
                                                 src={chat.home.logo_url}
                                                 alt={chat.home.name}
+                                                width={48}
+                                                height={48}
                                                 className="w-full h-full object-cover"
+                                                unoptimized
                                             />
                                         ) : (
                                             <Building2 size={24} style={{ color: "#0D9488" }} />
@@ -155,16 +202,28 @@ export default function DonorChatsPage() {
                                                 style={{
                                                     backgroundColor: chat.need?.status === "pending_pickup"
                                                         ? "rgba(251, 191, 36, 0.15)"
-                                                        : "rgba(34, 197, 94, 0.15)",
+                                                        : chat.need?.status === "active"
+                                                            ? "rgba(59, 130, 246, 0.15)"
+                                                            : "rgba(34, 197, 94, 0.15)",
                                                     color: chat.need?.status === "pending_pickup"
                                                         ? "#F59E0B"
-                                                        : "#22C55E",
+                                                        : chat.need?.status === "active"
+                                                            ? "#3B82F6"
+                                                            : "#22C55E",
                                                 }}
                                             >
-                                                <Clock size={10} />
+                                                {chat.need?.status === "pending_pickup" ? (
+                                                    <Clock size={10} />
+                                                ) : chat.need?.status === "active" ? (
+                                                    <CircleDashed size={10} />
+                                                ) : (
+                                                    <CheckCircle size={10} />
+                                                )}
                                                 {chat.need?.status === "pending_pickup"
                                                     ? "Pending Pickup"
-                                                    : "Completed"}
+                                                    : chat.need?.status === "active"
+                                                        ? "Active"
+                                                        : "Completed"}
                                             </span>
                                         </div>
                                     </div>

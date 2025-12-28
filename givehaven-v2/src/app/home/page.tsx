@@ -172,7 +172,7 @@ export default function HomeDashboard() {
                         Welcome back{home?.name ? `, ${home.name}` : ""}!
                     </h1>
                     <p className="text-sm mt-1" style={{ color: "#64748B" }}>
-                        Here's what's happening with your needs today.
+                        Here&apos;s what&apos;s happening with your needs today.
                     </p>
                 </div>
                 {home?.verified && (
@@ -336,7 +336,7 @@ export default function HomeDashboard() {
                                     Awaiting Verification
                                 </p>
                                 <p className="text-xs mt-1" style={{ color: "#92400E" }}>
-                                    You'll be able to post needs once verified.
+                                    You&apos;ll be able to post needs once verified.
                                 </p>
                             </div>
                         )}

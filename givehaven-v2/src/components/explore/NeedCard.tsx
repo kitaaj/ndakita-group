@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     Package,
     Utensils,
@@ -97,18 +98,26 @@ export default function NeedCard({ need, onPledge, isPledging }: NeedCardProps) 
                     {need.description}
                 </p>
 
-                {/* Quantity Badge */}
-                {need.quantity > 1 && (
-                    <div className="mb-4">
-                        <span
-                            className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium"
-                            style={{ backgroundColor: "rgba(13, 148, 136, 0.1)", color: "#0D9488" }}
-                        >
-                            <Package size={12} />
-                            Qty: {need.quantity}
+                {/* Quantity & Progress */}
+                <div className="mb-4">
+                    <div className="flex items-center justify-between text-xs mb-1.5" style={{ color: "#64748B" }}>
+                        <span className="font-medium">
+                            {(need.fulfilled_quantity || 0)} / {need.quantity} pledged
+                        </span>
+                        <span className="font-medium" style={{ color: "#0D9488" }}>
+                            {Math.max(0, need.quantity - (need.fulfilled_quantity || 0))} remaining
                         </span>
                     </div>
-                )}
+                    <div className="h-2 w-full rounded-full overflow-hidden" style={{ backgroundColor: "rgba(13, 148, 136, 0.1)" }}>
+                        <div
+                            className="h-full rounded-full transition-all duration-500 ease-out"
+                            style={{
+                                width: `${Math.min(100, ((need.fulfilled_quantity || 0) / need.quantity) * 100)}%`,
+                                backgroundColor: "#0D9488"
+                            }}
+                        />
+                    </div>
+                </div>
 
                 {/* Home Info */}
                 <Link
@@ -122,10 +131,13 @@ export default function NeedCard({ need, onPledge, isPledging }: NeedCardProps) 
                         }}
                     >
                         {need.home.logo_url ? (
-                            <img
+                            <Image
                                 src={need.home.logo_url}
                                 alt={need.home.name}
+                                width={40}
+                                height={40}
                                 className="w-full h-full object-cover"
+                                unoptimized
                             />
                         ) : (
                             <span className="text-sm font-semibold" style={{ color: "#0D9488" }}>

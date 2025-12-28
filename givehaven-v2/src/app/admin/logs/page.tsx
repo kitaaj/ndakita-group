@@ -8,8 +8,13 @@ import Badge from "@/components/admin/Badge";
 import { supabase, type ActivityLog } from "@/lib/supabase";
 import Papa from "papaparse";
 
+interface ActivityLogWithProfile extends ActivityLog {
+    profiles?: { display_name?: string; role?: string; is_super_admin?: boolean };
+    entity_name?: string;
+}
+
 export default function LogsPage() {
-    const [logs, setLogs] = useState<ActivityLog[]>([]);
+    const [logs, setLogs] = useState<ActivityLogWithProfile[]>([]);
     const [completionData, setCompletionData] = useState<{ date: string; count: number }[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [dateRange, setDateRange] = useState({ start: "", end: "" });
@@ -24,8 +29,7 @@ export default function LogsPage() {
         if (!supabase) return;
 
         try {
-            // Get activity logs - note: user_id references auth.users, not profiles directly
-            // So we fetch logs without joining and show what we have
+            // Get activity logs
             const { data: logsData, error: logsError } = await supabase
                 .from("activity_logs")
                 .select("*")
@@ -36,7 +40,67 @@ export default function LogsPage() {
                 console.error("Failed to fetch logs:", logsError);
             }
 
-            setLogs((logsData as ActivityLog[]) || []);
+            // Get unique user IDs from logs and fetch their profiles
+            // Note: Some logs use profile.id, others use auth.users.id (user_id column)
+            const userIds = [...new Set((logsData || []).map(log => log.user_id).filter(Boolean))];
+            const profilesMap: Record<string, { display_name?: string; role?: string; is_super_admin?: boolean }> = {};
+
+            if (userIds.length > 0) {
+                // First try to match by profiles.id
+                const { data: profilesByIdData } = await supabase
+                    .from("profiles")
+                    .select("id, user_id, display_name, role, is_super_admin")
+                    .in("id", userIds);
+
+                // Then try to match by profiles.user_id (for admin actions using auth.users.id)
+                const { data: profilesByUserIdData } = await supabase
+                    .from("profiles")
+                    .select("id, user_id, display_name, role, is_super_admin")
+                    .in("user_id", userIds);
+
+                // Build map from both queries
+                (profilesByIdData || []).forEach(p => {
+                    profilesMap[p.id] = { display_name: p.display_name, role: p.role, is_super_admin: p.is_super_admin };
+                });
+                (profilesByUserIdData || []).forEach(p => {
+                    profilesMap[p.user_id] = { display_name: p.display_name, role: p.role, is_super_admin: p.is_super_admin };
+                });
+            }
+
+            // Fetch entity names (needs and homes)
+            const needIds = [...new Set((logsData || []).filter(log => log.entity_type === "need").map(log => log.entity_id))];
+            const homeIds = [...new Set((logsData || []).filter(log => log.entity_type === "home").map(log => log.entity_id))];
+
+            const entityNames: Record<string, string> = {};
+
+            if (needIds.length > 0) {
+                const { data: needsData } = await supabase
+                    .from("needs")
+                    .select("id, title")
+                    .in("id", needIds);
+                (needsData || []).forEach(n => {
+                    entityNames[n.id] = n.title;
+                });
+            }
+
+            if (homeIds.length > 0) {
+                const { data: homesData } = await supabase
+                    .from("homes")
+                    .select("id, name")
+                    .in("id", homeIds);
+                (homesData || []).forEach(h => {
+                    entityNames[h.id] = h.name;
+                });
+            }
+
+            // Merge logs with profile data and entity names
+            const enrichedLogs = (logsData || []).map(log => ({
+                ...log,
+                profiles: log.user_id ? profilesMap[log.user_id] : undefined,
+                entity_name: entityNames[log.entity_id] || log.metadata?.need_title || log.metadata?.home_name || undefined
+            }));
+
+            setLogs(enrichedLogs as ActivityLogWithProfile[]);
 
             // Get completion data for chart (last 30 days)
             const thirtyDaysAgo = new Date();
@@ -348,7 +412,7 @@ export default function LogsPage() {
                                                 </span>
                                                 {log.user_id && (
                                                     <span className="text-xs" style={{ color: "#94A3B8" }}>
-                                                        • by Admin
+                                                        • by {log.profiles?.display_name || (log.profiles?.is_super_admin ? "Admin" : log.profiles?.role === "home" ? "Home Owner" : log.profiles?.role === "donor" ? "Donor" : "User")}
                                                     </span>
                                                 )}
                                             </div>
@@ -378,13 +442,10 @@ export default function LogsPage() {
                                                     >
                                                         <div className="grid grid-cols-2 gap-4 text-sm">
                                                             <div>
-                                                                <p className="font-medium mb-1" style={{ color: "#64748B" }}>Entity ID</p>
-                                                                <code
-                                                                    className="text-xs px-2 py-1 rounded"
-                                                                    style={{ backgroundColor: "rgba(13, 148, 136, 0.1)", color: "#0D9488" }}
-                                                                >
-                                                                    {log.entity_id}
-                                                                </code>
+                                                                <p className="font-medium mb-1" style={{ color: "#64748B" }}>Entity Name</p>
+                                                                <p style={{ color: "#1E293B" }}>
+                                                                    {log.entity_name || "Unknown"}
+                                                                </p>
                                                             </div>
                                                             <div>
                                                                 <p className="font-medium mb-1" style={{ color: "#64748B" }}>Entity Type</p>
@@ -392,8 +453,19 @@ export default function LogsPage() {
                                                             </div>
                                                             {log.user_id && (
                                                                 <div>
-                                                                    <p className="font-medium mb-1" style={{ color: "#64748B" }}>Executed By</p>
-                                                                    <p style={{ color: "#1E293B" }}>Admin</p>
+                                                                    <p className="font-medium mb-1" style={{ color: "#64748B" }}>Logged By</p>
+                                                                    <p style={{ color: "#1E293B" }}>
+                                                                        {log.profiles?.display_name || (log.profiles?.is_super_admin ? "Admin" : log.profiles?.role === "home" ? "Home Owner" : log.profiles?.role === "donor" ? "Donor" : "User")}
+                                                                        {log.profiles?.is_super_admin ? (
+                                                                            <span className="text-xs ml-2 px-2 py-0.5 rounded-full" style={{ backgroundColor: "rgba(139, 92, 246, 0.1)", color: "#8B5CF6" }}>
+                                                                                Admin
+                                                                            </span>
+                                                                        ) : log.profiles?.role && (
+                                                                            <span className="text-xs ml-2 px-2 py-0.5 rounded-full" style={{ backgroundColor: log.profiles.role === "home" ? "rgba(59, 130, 246, 0.1)" : "rgba(249, 115, 22, 0.1)", color: log.profiles.role === "home" ? "#3B82F6" : "#F97316" }}>
+                                                                                {log.profiles.role === "home" ? "Home" : "Donor"}
+                                                                            </span>
+                                                                        )}
+                                                                    </p>
                                                                 </div>
                                                             )}
                                                             {log.metadata && Object.keys(log.metadata).length > 0 && (

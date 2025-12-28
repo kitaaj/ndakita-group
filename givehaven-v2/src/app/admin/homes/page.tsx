@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, Building2, MapPin, Calendar, CheckCircle, XCircle, Clock, ChevronRight } from "lucide-react";
 import Link from "next/link";
@@ -19,9 +19,7 @@ export default function HomesPage() {
         loadHomes();
     }, []);
 
-    useEffect(() => {
-        filterHomes();
-    }, [homes, searchQuery, statusFilter]);
+
 
     async function loadHomes() {
         try {
@@ -34,7 +32,7 @@ export default function HomesPage() {
         }
     }
 
-    function filterHomes() {
+    const filterHomes = useCallback(() => {
         let filtered = [...homes];
 
         if (searchQuery) {
@@ -59,7 +57,11 @@ export default function HomesPage() {
         }
 
         setFilteredHomes(filtered);
-    }
+    }, [homes, searchQuery, statusFilter]);
+
+    useEffect(() => {
+        filterHomes();
+    }, [filterHomes]);
 
     const formatDate = (dateString: string) => {
         return new Date(dateString).toLocaleDateString("en-US", {
