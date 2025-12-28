@@ -34,17 +34,18 @@ function AuthCallbackContent() {
             // Check if user has a profile and determine role
             const { data: profile } = await supabase
                 .from("profiles")
-                .select("id, role")
+                .select("id, role, is_super_admin, is_home_owner")
                 .eq("user_id", session.user.id)
                 .single();
 
-            if (profile?.role === "admin") {
+            // Check for super admin first
+            if (profile?.is_super_admin) {
                 router.push("/admin");
-            } else if (profile?.role === "home") {
+            } else if (profile?.is_home_owner) {
                 // Check if they have an existing home
                 const { data: home } = await supabase
                     .from("homes")
-                    .select("*")
+                    .select("id")
                     .eq("profile_id", profile.id)
                     .single();
 
