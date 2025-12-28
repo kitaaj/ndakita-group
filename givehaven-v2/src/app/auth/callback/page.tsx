@@ -54,8 +54,8 @@ function AuthCallbackContent() {
                     router.push("/register-home");
                 }
             } else {
-                // Default to app page for donors and new users without profile
-                router.push("/app");
+                // Default to pledges page for donors
+                router.push("/donor/pledges");
             }
         }
 
