@@ -19,7 +19,6 @@ const VERIFICATION_STATUSES: VerificationStatus[] = [
     "reviewing",
     "needs_documents",
     "approved",
-    "verified",
     "rejected",
 ];
 
