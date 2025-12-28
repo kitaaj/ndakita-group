@@ -249,33 +249,31 @@ export default function ExplorePage() {
                     </div>
 
                     {/* Urgency Filter */}
-                    <div className="flex items-center gap-2 overflow-x-auto pb-1">
-                        <Filter size={16} className="flex-shrink-0" style={{ color: "#64748B" }} />
-                        <span className="text-sm flex-shrink-0" style={{ color: "#64748B" }}>Priority:</span>
-                        <div className="flex gap-2 flex-shrink-0">
-                            {urgencyOptions.map((opt) => {
-                                const isActive = urgencyFilter === opt.value;
-                                return (
-                                    <button
-                                        key={opt.value}
-                                        onClick={() => setUrgencyFilter(opt.value)}
-                                        className="px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap"
-                                        style={{
-                                            backgroundColor: isActive
-                                                ? opt.value === "critical" ? "rgba(239, 68, 68, 0.15)" : "rgba(13, 148, 136, 0.15)"
-                                                : "transparent",
-                                            color: isActive
-                                                ? opt.value === "critical" ? "#EF4444" : "#0D9488"
-                                                : "#94A3B8",
-                                            border: `1px solid ${isActive ? (opt.value === "critical" ? "rgba(239, 68, 68, 0.3)" : "rgba(13, 148, 136, 0.3)") : "rgba(148, 163, 184, 0.3)"}`,
-                                        }}
-                                    >
-                                        {opt.value === "critical" && <AlertTriangle size={10} className="inline mr-1" />}
-                                        {opt.label}
-                                    </button>
-                                );
-                            })}
-                        </div>
+                    <div className="flex flex-wrap items-center gap-2">
+                        <Filter size={16} style={{ color: "#64748B" }} />
+                        <span className="text-sm" style={{ color: "#64748B" }}>Priority:</span>
+                        {urgencyOptions.map((opt) => {
+                            const isActive = urgencyFilter === opt.value;
+                            return (
+                                <button
+                                    key={opt.value}
+                                    onClick={() => setUrgencyFilter(opt.value)}
+                                    className="px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap"
+                                    style={{
+                                        backgroundColor: isActive
+                                            ? opt.value === "critical" ? "rgba(239, 68, 68, 0.15)" : "rgba(13, 148, 136, 0.15)"
+                                            : "transparent",
+                                        color: isActive
+                                            ? opt.value === "critical" ? "#EF4444" : "#0D9488"
+                                            : "#94A3B8",
+                                        border: `1px solid ${isActive ? (opt.value === "critical" ? "rgba(239, 68, 68, 0.3)" : "rgba(13, 148, 136, 0.3)") : "rgba(148, 163, 184, 0.3)"}`,
+                                    }}
+                                >
+                                    {opt.value === "critical" && <AlertTriangle size={10} className="inline mr-1" />}
+                                    {opt.label}
+                                </button>
+                            );
+                        })}
                     </div>
                 </motion.div>
             </div>
@@ -328,164 +326,166 @@ export default function ExplorePage() {
                             }
                         </p>
                     </motion.div>
-                )}
-            </div>
+                )
+                }
+            </div >
 
             {/* Pledge Confirmation Modal */}
             <AnimatePresence>
-                {showPledgeModal && selectedNeed && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
-                        onClick={() => setShowPledgeModal(false)}
-                    >
+                {
+                    showPledgeModal && selectedNeed && (
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            className="w-full max-w-md rounded-2xl overflow-hidden"
-                            style={{ backgroundColor: "white" }}
-                            onClick={(e) => e.stopPropagation()}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+                            onClick={() => setShowPledgeModal(false)}
                         >
-                            {/* Modal Header */}
-                            <div
-                                className="p-4 flex items-center justify-between"
-                                style={{ backgroundColor: "rgba(13, 148, 136, 0.05)" }}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                animate={{ opacity: 1, scale: 1, y: 0 }}
+                                exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                className="w-full max-w-md rounded-2xl overflow-hidden"
+                                style={{ backgroundColor: "white" }}
+                                onClick={(e) => e.stopPropagation()}
                             >
-                                <div className="flex items-center gap-3">
-                                    <div
-                                        className="w-10 h-10 rounded-full flex items-center justify-center"
-                                        style={{ backgroundColor: "rgba(249, 115, 22, 0.15)" }}
-                                    >
-                                        <HandHeart size={20} style={{ color: "#F97316" }} />
-                                    </div>
-                                    <h2 className="font-semibold" style={{ color: "#1E293B" }}>
-                                        Confirm Your Pledge
-                                    </h2>
-                                </div>
-                                <button
-                                    onClick={() => setShowPledgeModal(false)}
-                                    className="p-2 rounded-full hover:bg-gray-100"
-                                >
-                                    <X size={20} style={{ color: "#64748B" }} />
-                                </button>
-                            </div>
-
-                            {/* Modal Body */}
-                            <div className="p-6">
+                                {/* Modal Header */}
                                 <div
-                                    className="rounded-xl p-4 mb-4"
-                                    style={{ backgroundColor: "#F8FAFC" }}
+                                    className="p-4 flex items-center justify-between"
+                                    style={{ backgroundColor: "rgba(13, 148, 136, 0.05)" }}
                                 >
-                                    <p className="font-medium mb-1" style={{ color: "#1E293B" }}>
-                                        {selectedNeed.title}
-                                    </p>
-                                    <p className="text-sm mb-2" style={{ color: "#64748B" }}>
-                                        {selectedNeed.description}
-                                    </p>
-                                    <div className="flex items-center justify-between text-xs mt-3 pt-3 border-t border-gray-100">
-                                        <span style={{ color: "#0D9488" }}>
-                                            For: {selectedNeed.home.name}
-                                        </span>
-                                        <span className="text-gray-500">
-                                            Needed: {selectedNeed.quantity} • Remaining: {selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {/* Quantity Selector */}
-                                <div className="mb-6">
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                                        How many can you provide?
-                                    </label>
                                     <div className="flex items-center gap-3">
-                                        <button
-                                            onClick={() => setPledgeQuantity(Math.max(1, pledgeQuantity - 1))}
-                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                                            disabled={pledgeQuantity <= 1}
+                                        <div
+                                            className="w-10 h-10 rounded-full flex items-center justify-center"
+                                            style={{ backgroundColor: "rgba(249, 115, 22, 0.15)" }}
                                         >
-                                            -
-                                        </button>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max={selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
-                                            value={pledgeQuantity}
-                                            onChange={(e) => {
-                                                const val = parseInt(e.target.value);
-                                                const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
-                                                if (!isNaN(val)) {
-                                                    setPledgeQuantity(Math.max(1, Math.min(max, val)));
-                                                }
-                                            }}
-                                            className="flex-1 h-10 text-center border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
-                                        />
-                                        <button
-                                            onClick={() => {
-                                                const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
-                                                setPledgeQuantity(Math.min(max, pledgeQuantity + 1));
-                                            }}
-                                            className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
-                                            disabled={pledgeQuantity >= (selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0))}
-                                        >
-                                            +
-                                        </button>
+                                            <HandHeart size={20} style={{ color: "#F97316" }} />
+                                        </div>
+                                        <h2 className="font-semibold" style={{ color: "#1E293B" }}>
+                                            Confirm Your Pledge
+                                        </h2>
                                     </div>
-                                </div>
-
-                                <p className="text-sm mb-6" style={{ color: "#64748B" }}>
-                                    By pledging, you&apos;ll be connected directly with{" "}
-                                    <strong>{selectedNeed.home.name}</strong> to coordinate the donation.
-                                    A chat room will be created for you.
-                                </p>
-
-                                {!isAuthenticated && (
-                                    <div
-                                        className="rounded-xl p-3 mb-4 flex items-center gap-3"
-                                        style={{ backgroundColor: "rgba(251, 191, 36, 0.1)" }}
-                                    >
-                                        <AlertTriangle size={18} style={{ color: "#F59E0B" }} />
-                                        <p className="text-sm" style={{ color: "#92400E" }}>
-                                            You&apos;ll need to sign in to complete your pledge.
-                                        </p>
-                                    </div>
-                                )}
-
-                                <div className="flex gap-3">
                                     <button
                                         onClick={() => setShowPledgeModal(false)}
-                                        className="flex-1 py-3 rounded-xl font-medium text-sm"
-                                        style={{
-                                            backgroundColor: "#F1F5F9",
-                                            color: "#64748B",
-                                        }}
+                                        className="p-2 rounded-full hover:bg-gray-100"
                                     >
-                                        Cancel
-                                    </button>
-                                    <button
-                                        onClick={handleConfirmPledge}
-                                        disabled={!!pledgingNeedId}
-                                        className="flex-1 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50"
-                                        style={{
-                                            backgroundColor: "#F97316",
-                                            boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
-                                        }}
-                                    >
-                                        {pledgingNeedId ? (
-                                            <Loader2 size={18} className="animate-spin mx-auto" />
-                                        ) : isAuthenticated ? (
-                                            "Confirm Pledge"
-                                        ) : (
-                                            "Sign In & Pledge"
-                                        )}
+                                        <X size={20} style={{ color: "#64748B" }} />
                                     </button>
                                 </div>
-                            </div>
+
+                                {/* Modal Body */}
+                                <div className="p-6">
+                                    <div
+                                        className="rounded-xl p-4 mb-4"
+                                        style={{ backgroundColor: "#F8FAFC" }}
+                                    >
+                                        <p className="font-medium mb-1" style={{ color: "#1E293B" }}>
+                                            {selectedNeed.title}
+                                        </p>
+                                        <p className="text-sm mb-2" style={{ color: "#64748B" }}>
+                                            {selectedNeed.description}
+                                        </p>
+                                        <div className="flex items-center justify-between text-xs mt-3 pt-3 border-t border-gray-100">
+                                            <span style={{ color: "#0D9488" }}>
+                                                For: {selectedNeed.home.name}
+                                            </span>
+                                            <span className="text-gray-500">
+                                                Needed: {selectedNeed.quantity} • Remaining: {selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    {/* Quantity Selector */}
+                                    <div className="mb-6">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            How many can you provide?
+                                        </label>
+                                        <div className="flex items-center gap-3">
+                                            <button
+                                                onClick={() => setPledgeQuantity(Math.max(1, pledgeQuantity - 1))}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                                disabled={pledgeQuantity <= 1}
+                                            >
+                                                -
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max={selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0)}
+                                                value={pledgeQuantity}
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value);
+                                                    const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
+                                                    if (!isNaN(val)) {
+                                                        setPledgeQuantity(Math.max(1, Math.min(max, val)));
+                                                    }
+                                                }}
+                                                className="flex-1 h-10 text-center border border-gray-200 rounded-lg outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                                            />
+                                            <button
+                                                onClick={() => {
+                                                    const max = selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0);
+                                                    setPledgeQuantity(Math.min(max, pledgeQuantity + 1));
+                                                }}
+                                                className="w-10 h-10 flex items-center justify-center rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors"
+                                                disabled={pledgeQuantity >= (selectedNeed.quantity - (selectedNeed.fulfilled_quantity || 0))}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                    </div>
+
+                                    <p className="text-sm mb-6" style={{ color: "#64748B" }}>
+                                        By pledging, you&apos;ll be connected directly with{" "}
+                                        <strong>{selectedNeed.home.name}</strong> to coordinate the donation.
+                                        A chat room will be created for you.
+                                    </p>
+
+                                    {!isAuthenticated && (
+                                        <div
+                                            className="rounded-xl p-3 mb-4 flex items-center gap-3"
+                                            style={{ backgroundColor: "rgba(251, 191, 36, 0.1)" }}
+                                        >
+                                            <AlertTriangle size={18} style={{ color: "#F59E0B" }} />
+                                            <p className="text-sm" style={{ color: "#92400E" }}>
+                                                You&apos;ll need to sign in to complete your pledge.
+                                            </p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex gap-3">
+                                        <button
+                                            onClick={() => setShowPledgeModal(false)}
+                                            className="flex-1 py-3 rounded-xl font-medium text-sm"
+                                            style={{
+                                                backgroundColor: "#F1F5F9",
+                                                color: "#64748B",
+                                            }}
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            onClick={handleConfirmPledge}
+                                            disabled={!!pledgingNeedId}
+                                            className="flex-1 py-3 rounded-xl font-semibold text-sm text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                            style={{
+                                                backgroundColor: "#F97316",
+                                                boxShadow: "0 4px 12px rgba(249, 115, 22, 0.3)",
+                                            }}
+                                        >
+                                            {pledgingNeedId ? (
+                                                <Loader2 size={18} className="animate-spin mx-auto" />
+                                            ) : isAuthenticated ? (
+                                                "Confirm Pledge"
+                                            ) : (
+                                                "Sign In & Pledge"
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+                            </motion.div>
                         </motion.div>
-                    </motion.div>
-                )}
+                    )}
             </AnimatePresence>
 
             <Footer />
