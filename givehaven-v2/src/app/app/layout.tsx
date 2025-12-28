@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "GiveHaven - Connecting Hearts to Homes",
-    description: "Browse what children's homes need, pledge what you have, and make real impact.",
+    description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
     openGraph: {
         title: "GiveHaven - Connecting Hearts to Homes",
-        description: "Browse what children's homes need, pledge what you have, and make real impact.",
+        description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
         url: "https://www.ndakita.com/app",
         type: "website",
         images: [
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     twitter: {
         card: "summary_large_image",
         title: "GiveHaven - Connecting Hearts to Homes",
-        description: "Browse what children's homes need, pledge what you have, and make real impact.",
+        description: "Make your kindness count where it matters most. Connecting generous hearts directly to verified children's homes.",
         images: ["/og-image-app.png"],
     },
 };
