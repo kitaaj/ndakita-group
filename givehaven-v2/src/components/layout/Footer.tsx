@@ -138,17 +138,26 @@ export default function Footer() {
                     style={{ borderColor: "rgba(13, 148, 136, 0.1)" }}
                 >
                     <p
+                        className="text-xs flex items-center gap-1"
+                        style={{ color: "#94A3B8" }}
+                    >
+                        Made with <Heart size={12} style={{ color: "#F97316" }} fill="#F97316" /> for caring hearts
+                    </p>
+                    <p
                         className="text-xs"
                         style={{ color: "#94A3B8" }}
                     >
                         © {new Date().getFullYear()} GiveHaven. All rights reserved.
                     </p>
-                    <p
-                        className="text-xs flex items-center gap-1"
+                    <a
+                        href="https://johnkitaa.com"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs transition-colors hover:underline"
                         style={{ color: "#94A3B8" }}
                     >
-                        Made with <Heart size={12} style={{ color: "#F97316" }} fill="#F97316" /> for those in need
-                    </p>
+                        Developed by S¡r John
+                    </a>
                 </div>
             </div>
         </footer>
